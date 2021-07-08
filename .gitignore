@@ -2,6 +2,7 @@
 token.txt
 
 # Pycharm files
+.idea
 .idea/
 
 # Byte-compiled / optimized / DLL files
