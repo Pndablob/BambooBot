@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 import os
 import discord
 from discord.ext import commands
@@ -11,13 +11,19 @@ def read_token():
 
 
 token = read_token()
-bot = commands.Bot(command_prefix='p!')
+bot = commands.Bot(command_prefix='p!', intents=discord.Intents().all())
 
 
 def signature(embedMessage):
     # Signs embedded messages with a signature.
     embedMessage.set_footer(text=f'Bamboo Bot by Pnda#9999',
                             icon_url='https://cdn.discordapp.com/emojis/851191181315538965.png?v=1')
+
+
+# Loads all cogs on startup
+for filename in os.listdir('./cogs'):
+    if filename.endswith('.py'):
+        bot.load_extension(f'cogs.{filename[:-3]}')  # Cut last 3 char (.py)
 
 
 @bot.command()
@@ -85,8 +91,7 @@ async def on_disconnect():
 async def on_ready():
     # When bot is ready, send ready message
     await bot.change_presence(activity=discord.Game('Bamboo Simulator'))
-    print(f'Logged in as {bot.user.name} ({bot.user.id})\n'
-          f'\nLogged in Guilds:')
+    print(f'Logged in as {bot.user.name} ({bot.user.id})\n\nLogged in Guilds:')
     for guild in bot.guilds:
         print(f'{guild} ({guild.id})')
 
@@ -96,7 +101,7 @@ async def on_ready():
 
     for on_ready_channels in on_ready_channels:
         ch = bot.get_channel(on_ready_channels)
-        embed = discord.Embed(title='Bot Connected', color=0x08c744, timestamp=datetime.datetime.utcnow())
+        embed = discord.Embed(title='Bot Connected', color=0x08c744, timestamp=datetime.utcnow())
         signature(embedMessage=embed)
         await ch.send(embed=embed)
 
