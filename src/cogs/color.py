@@ -13,6 +13,7 @@ class colorRoles(commands.Cog):
         self.bot = bot
 
     @commands.bot_has_permissions(manage_roles=True)
+    @commands.is_owner()
     @commands.has_any_role(
         # Guild: PBT
         815952833253605426,  # *

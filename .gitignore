@@ -1,6 +1,9 @@
 # Discord bot files
 token.txt
 
+# In dev stuff
+src/in-dev
+
 # Pycharm files
 .idea/
 
