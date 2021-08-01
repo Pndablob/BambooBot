@@ -3,10 +3,9 @@ from discord.ext import commands
 from datetime import datetime
 
 
-def signature(embedMessage):
+def add_author(embedMessage, author):
     # Signs embedded messages with a signature.
-    embedMessage.set_footer(text=f'Bamboo Bot by Pnda#9999',
-                            icon_url='https://cdn.discordapp.com/emojis/851191181315538965.png?v=1')
+    embedMessage.set_footer(text=f'{author.name}#{author.discriminator}', icon_url=author.avatar_url)
 
 
 class seasonalRoles(commands.Cog):
@@ -15,7 +14,10 @@ class seasonalRoles(commands.Cog):
 
     # Checks when a member has updated their nickname
     @commands.Cog.listener()
-    @commands.is_owner()
+    @commands.has_any_role(
+        # BB
+        472842678778724352  # Intellectual
+    )
     async def on_member_update(self, before, after):
 
         role = discord.utils.find(lambda r: r.name.startswith == 'Sunny 🌞', after.guild.roles)
@@ -32,7 +34,7 @@ class seasonalRoles(commands.Cog):
                                       description=f'```md\n# Guild:\n{after.guild}```', timestamp=datetime.utcnow())
                 embed.add_field(name='Nickname Before:', value=f'```{before.display_name}```', inline=False)
                 embed.add_field(name='Nickname After:', value=f'```{after.display_name}```', inline=False)
-                signature(embed)
+                add_author(embed, after)
 
                 await logging_channel.send(embed=embed)
             except:

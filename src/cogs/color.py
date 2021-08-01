@@ -3,17 +3,16 @@ from discord.ext import commands
 from datetime import datetime
 
 
-def signature(embedMessage):
+def add_author(embedMessage, author):
     # Signs embedded messages with a signature.
-    embedMessage.set_footer(text=f'Bamboo Bot by Pnda#9999',
-                            icon_url='https://cdn.discordapp.com/emojis/851191181315538965.png?v=1')
+    embedMessage.set_footer(text=f'{author.name}#{author.discriminator}', icon_url=author.avatar_url)
 
 
 class colorRoles(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.has_permissions(manage_roles=True)
+    @commands.bot_has_permissions(manage_roles=True)
     @commands.has_any_role(
         # Guild: PBT
         815952833253605426,  # *
@@ -29,9 +28,11 @@ class colorRoles(commands.Cog):
         623288545439645706,  # Partners
         646106899737083945,  # Hypixel Staffy People
         603719761934942238,  # Creator
+        472841524804190208,  # Friend
         825256068607115275,  # 1b Giveaway
         792168173448986624,  # 500m Giveaway
         799296425233481779,  # 250m Giveaway
+        798764353930264646,  # Bakery Camper (Level 75)
 
         # Guild: TZT
         845089203788578857,  # nerd
@@ -109,7 +110,7 @@ class colorRoles(commands.Cog):
 
             embed = discord.Embed(title='Color Roles Cleared', description=f'Your color roles have been removed',
                                   color=0xffffff, timestamp=datetime.utcnow())
-            signature(embedMessage=embed)
+            add_author(embedMessage=embed, author=ctx.author)
             await ctx.send(embed=embed)
         else:
             await clear_color_roles()
@@ -118,7 +119,7 @@ class colorRoles(commands.Cog):
             await user.add_roles(role)
             embed = discord.Embed(title='Color Role Given', description=f'Your color is now: `{color.title()}`',
                                   color=role.color, timestamp=datetime.utcnow())
-            signature(embedMessage=embed)
+            add_author(embedMessage=embed, author=ctx.author)
             await ctx.send(embed=embed)
 
     @color.error

@@ -44,15 +44,16 @@ async def on_ready():
     for guild in bot.guilds:
         print(f'{guild.name} ({guild.id})')
 
+    # Loads all cogs on startup
     for filename in os.listdir('./cogs'):
         if filename.endswith('.py'):
             bot.load_extension(f'cogs.{filename[:-3]}')  # Cut last 3 char (.py)
+            print(f'loaded {filename}')
 
     on_ready_channels = [
         820473911753310208
     ]
 
-    # Loads all cogs on startup
     for on_ready_channels in on_ready_channels:
         ch = bot.get_channel(on_ready_channels)
         embed = discord.Embed(title='Bot Connected', color=0x08c744, timestamp=datetime.utcnow())
@@ -70,6 +71,7 @@ async def load(ctx, extension):
             if filename.endswith('.py'):
                 try:
                     bot.load_extension(f'cogs.{filename[:-3]}')  # Cut last 3 char (.py)
+                    print(f'loaded {filename}')
                 except:
                     pass
         await ctx.send('Loaded all extensions')
@@ -77,7 +79,8 @@ async def load(ctx, extension):
     else:
         try:
             bot.load_extension(f'cogs.{extension}')
-            await ctx.send(f'Loaded {extension} extension')
+            await ctx.send(f'Loaded `{extension}.py`')
+            print(f'loaded {extension}.py')
             await msg.add_reaction('✅')
         except:
             await ctx.send("Extension already loaded or doesn't exist")
@@ -87,7 +90,27 @@ async def load(ctx, extension):
 @bot.command()
 @commands.is_owner()
 async def unload(ctx, extension):
-    bot.unload_extension(f'cogs.{extension}')
+    msg = ctx.message
+
+    if extension.casefold() == 'all':
+        for filename in os.listdir('./cogs'):
+            if filename.endswith('.py'):
+                try:
+                    bot.unload_extension(f'cogs.{filename[:-3]}')  # Cut last 3 char (.py)
+                    print(f'unloaded {filename}')
+                except:
+                    pass
+        await ctx.send('Unloaded all extensions')
+        await msg.add_reaction('✅')
+    else:
+        try:
+            bot.unload_extension(f'cogs.{extension}')
+            await ctx.send(f'Unloaded `{extension}.py`')
+            print(f'unloaded {extension}.py')
+            await msg.add_reaction('✅')
+        except:
+            await ctx.send("Extension already unloaded or doesn't exist")
+            await msg.add_reaction('❌')
 
 
 @bot.command()
@@ -100,6 +123,7 @@ async def reload(ctx, extension):
             if filename.endswith('.py'):
                 try:
                     bot.reload_extension(f'cogs.{filename[:-3]}')  # Cut last 3 char (.py)
+                    print(f'reloaded {filename}')
                 except:
                     pass
         await ctx.send('Reloaded all extensions')
@@ -107,7 +131,8 @@ async def reload(ctx, extension):
     else:
         try:
             bot.reload_extension(f'cogs.{extension}')
-            await ctx.send(f'Reloaded {extension} extension')
+            await ctx.send(f'Reloaded `{extension}.py`')
+            print(f'reloaded {extension}.py')
             await msg.add_reaction('✅')
         except:
             await ctx.send("Extension already reloaded or doesn't exist")
