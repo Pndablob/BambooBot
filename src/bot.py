@@ -139,6 +139,43 @@ async def reload(ctx, extension):
             await msg.add_reaction('❌')
 
 
+@bot.command(name='dev')
+@commands.is_owner()
+async def dev(ctx, cmd):
+    msg = ctx.message
+
+    if cmd == 'unload':
+        for filename in os.listdir('./in-dev'):
+            if filename.endswith('.py'):
+                try:
+                    bot.unload_extension(f'in-dev.{filename[:-3]}')
+                    print(f'unloaded {filename}')
+                except:
+                    pass
+        await ctx.send('Unloaded all in-development extensions')
+        await msg.add_reaction('✅')
+    elif cmd == 'load':
+        for filename in os.listdir('./in-dev'):
+            if filename.endswith('.py'):
+                try:
+                    bot.load_extension(f'in-dev.{filename[:-3]}')
+                    print(f'loaded {filename}')
+                except:
+                    pass
+        await ctx.send('Loaded all in-development extensions')
+        await msg.add_reaction('✅')
+    elif cmd == 'reload':
+        for filename in os.listdir('./in-dev'):
+            if filename.endswith('.py'):
+                try:
+                    bot.reload_extension(f'in-dev.{filename[:-3]}')
+                    print(f'reloaded {filename}')
+                except:
+                    pass
+        await ctx.send('Reloaded all in-development extensions')
+        await msg.add_reaction('✅')
+
+
 # Manually updates the seasonal role count
 # See cogs/seasonalRole.py
 @bot.command(name='updatedisplay', aliases=['ud'])
