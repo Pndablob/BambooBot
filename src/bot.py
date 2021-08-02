@@ -1,3 +1,4 @@
+import asyncio
 from datetime import datetime
 import os
 
@@ -12,14 +13,15 @@ def read_token():
 
 
 token = read_token()
+
 bot = commands.Bot(command_prefix='p!', intents=discord.Intents().all())
 
 
+# 2ecc71 Hex code for color embeds
 def signature(embedMessage):
     # Signs embedded messages with a signature.
     embedMessage.set_footer(text=f'Bamboo Bot by Pnda#9999',
                             icon_url='https://cdn.discordapp.com/emojis/851191181315538965.png?v=1')
-    # 2ecc71 Hex code for color embeds
 
 
 @bot.event
@@ -30,19 +32,25 @@ async def on_connect():
 @bot.event
 async def on_disconnect():
     print('Bot disconnected')
+    ch = bot.get_channel(820473911753310208)
+
+    await ch.send(f'```md\n# Bot disconnected```')
 
 
 @bot.event
 async def on_ready():
+    # Wait to give the discord API time to fetch larger guilds (BB)
+    await asyncio.sleep(10)
+
     # Removes 'help' command
     bot.remove_command('help')
 
     # When bot is ready, send ready message
     await bot.change_presence(activity=discord.Game('Bamboo Simulator'))
-    print(f'Logged in as {bot.user.name} ({bot.user.id})\n'
-          f'\nLogged in Guilds:')
+    print(f'Logged in as {bot.user.name} ({bot.user.id})')
+
     for guild in bot.guilds:
-        print(f'{guild.name} ({guild.id})')
+        print(f'Logged in {guild} ({guild.id})\nUnavailable? {guild.unavailable}')
 
     # Loads all cogs on startup
     for filename in os.listdir('./cogs'):
@@ -54,6 +62,7 @@ async def on_ready():
         820473911753310208
     ]
 
+    # Sends a message in on_ready_channels stating the bot ready
     for on_ready_channels in on_ready_channels:
         ch = bot.get_channel(on_ready_channels)
         embed = discord.Embed(title='Bot Connected', color=0x08c744, timestamp=datetime.utcnow())
@@ -187,8 +196,6 @@ async def updateSeasonalRoleDisplay(ctx):
     ]
 
     for channel in display_channels:
-        logging_channel = bot.get_channel(863854481773953055)
-
         try:
             ch = discord.utils.get(ctx.guild.voice_channels, id=channel)
             role = discord.utils.find(lambda r: r.name == 'Sunny 🌞', ctx.guild.roles)
@@ -199,8 +206,8 @@ async def updateSeasonalRoleDisplay(ctx):
                                   description=f'```{ch.name}```', timestamp=datetime.utcnow())
             signature(embed)
 
-            await logging_channel.send(embed=embed)
-            print('Display updated manually')
+            await ctx.send(embed=embed)
+            print(f'Display updated manually in {ctx.guild}')
         except AttributeError:
             pass
 

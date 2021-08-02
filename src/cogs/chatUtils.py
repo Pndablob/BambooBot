@@ -3,6 +3,7 @@ from datetime import datetime
 
 import discord
 from discord.ext import commands
+from discord.ext import tasks
 
 
 def add_author(embedMessage, author):
@@ -10,15 +11,31 @@ def add_author(embedMessage, author):
     embedMessage.set_footer(text=f'{author.name}#{author.discriminator}', icon_url=author.avatar_url)
 
 
+def signature(embedMessage):
+    # Signs embedded messages with a signature.
+    embedMessage.set_footer(text=f'Bamboo Bot by Pnda#9999',
+                            icon_url='https://cdn.discordapp.com/emojis/851191181315538965.png?v=1')
+
+
 class chatUtils(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.checkup.start()
 
     # Send bot latency
     @commands.command()
     @commands.is_owner()
     async def ping(self, ctx):
-        await ctx.send(f'Pong! `{round(self.bot.latency * 1000)}ms`')
+        await ctx.send(f'```md\n# Pong!\n{round(self.bot.latency * 1000)}ms```')
+
+    @tasks.loop(hours=1)
+    async def checkup(self):
+        ch = self.bot.get_channel(820473911753310208)
+        embed = discord.Embed(description=f'```md\n# Ping:\n{round(self.bot.latency * 1000)}ms```', color=0x2ecc71,
+                              timestamp=datetime.utcnow())
+        signature(embed)
+
+        await ch.send(embed=embed)
 
     # Generates a random number from 0 to the given ceiling
     @commands.command(name='random', aliases=['rand'])
