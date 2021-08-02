@@ -1,5 +1,8 @@
+import asyncio
 import discord
 from discord.ext import commands
+from discord.ext import tasks
+
 from datetime import datetime
 
 
@@ -8,9 +11,16 @@ def add_author(embedMessage, author):
     embedMessage.set_footer(text=f'{author.name}#{author.discriminator}', icon_url=author.avatar_url)
 
 
+def signature(embedMessage):
+    # Signs embedded messages with a signature.
+    embedMessage.set_footer(text=f'Bamboo Bot by Pnda#9999',
+                            icon_url='https://cdn.discordapp.com/emojis/851191181315538965.png?v=1')
+
+
 class seasonalRoles(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        updateDisplay.start(self)
 
     # Checks when a member has updated their nickname
     @commands.Cog.listener()
@@ -31,7 +41,6 @@ class seasonalRoles(commands.Cog):
         798764352823623720,  # Level 50
     )
     async def on_member_update(self, before, after):
-
         role = discord.utils.find(lambda r: r.name == 'Sunny 🌞', after.guild.roles)
         logging_channel = self.bot.get_channel(863854481773953055)
 
@@ -51,6 +60,34 @@ class seasonalRoles(commands.Cog):
                 await logging_channel.send(embed=embed)
             except:
                 pass
+
+
+@tasks.loop(minutes=60)
+async def updateDisplay(self):
+    guilds = [
+        815952235296063549,  # PBT
+        450878205294018560,  # BB
+    ]
+    display_channels = [
+        862526927440707614,  # PBT
+        863851458583592991,  # BB
+    ]
+    logging_channel = self.bot.get_channel(863854481773953055)
+
+    for guild_id in guilds:
+        guild = self.bot.get_guild(id=guild_id)
+        index = guilds.index(guild_id)
+
+        ch = discord.utils.get(guild.voice_channels, id=display_channels[index])
+        role = discord.utils.find(lambda r: r.name == 'Sunny 🌞', guild.roles)
+
+        await ch.edit(name=f'Sunny: {len(role.members)} 🌞')
+
+        embed = discord.Embed(title=f'Display updated in guild `{guild}`', color=0x2ecc71,
+                              description=f'```{ch.name}```', timestamp=datetime.utcnow())
+        signature(embed)
+
+        await logging_channel.send(embed=embed)
 
 
 def setup(bot):
