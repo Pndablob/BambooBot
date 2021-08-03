@@ -6,13 +6,7 @@ import discord
 from discord.ext import commands
 
 
-def read_token():
-    with open("token.txt", "r") as f:
-        lines = f.readlines()
-        return lines[0].strip()
-
-
-token = read_token()
+token = open("token.txt", "r").read()
 
 bot = commands.Bot(command_prefix='p!', intents=discord.Intents().all())
 
