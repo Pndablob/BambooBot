@@ -71,6 +71,10 @@ async def updateDisplay(self):
         862526927440707614,  # PBT
         863851458583592991,  # BB
     ]
+    seasonal_role = [
+        862520211142869053,  # PBT
+        862837874365300766,  # BB
+    ]
     logging_channel = self.bot.get_channel(863854481773953055)
 
     for guild_id in guilds:
@@ -78,7 +82,7 @@ async def updateDisplay(self):
         index = guilds.index(guild_id)
 
         ch = discord.utils.get(guild.voice_channels, id=display_channels[index])
-        role = discord.utils.find(lambda r: r.name == 'Sunny 🌞', guild.roles)
+        role = discord.utils.get(guild.roles, id=seasonal_role[index])
 
         await ch.edit(name=f'Sunny: {len(role.members)} 🌞')
 
