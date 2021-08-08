@@ -34,7 +34,7 @@ async def on_disconnect():
 @bot.event
 async def on_ready():
     # Wait to give the discord API time to fetch larger guilds (BB)
-    await asyncio.sleep(10)
+    await asyncio.sleep(5)
 
     # Removes 'help' command
     bot.remove_command('help')
@@ -52,6 +52,12 @@ async def on_ready():
             bot.load_extension(f'cogs.{filename[:-3]}')  # Cut last 3 char (.py)
             print(f'loaded {filename}')
 
+    # Loads all utils on startup
+    for filename in os.listdir('./cogs/utils'):
+        if filename.endswith('.py'):
+            bot.load_extension(f'cogs.utils.{filename[:-3]}')  # Cut last 3 char (.py)
+            print(f'loaded {filename}')
+
     on_ready_channels = [
         820473911753310208
     ]
@@ -64,7 +70,7 @@ async def on_ready():
         await ch.send(embed=embed)
 
 
-@bot.command()
+@bot.command(aliases=['l'])
 @commands.is_owner()
 async def load(ctx, extension):
     msg = ctx.message
@@ -90,7 +96,7 @@ async def load(ctx, extension):
             await msg.add_reaction('❌')
 
 
-@bot.command()
+@bot.command(aliases=['ul'])
 @commands.is_owner()
 async def unload(ctx, extension):
     msg = ctx.message
@@ -116,7 +122,7 @@ async def unload(ctx, extension):
             await msg.add_reaction('❌')
 
 
-@bot.command()
+@bot.command(aliases=['rl'])
 @commands.is_owner()
 async def reload(ctx, extension):
     msg = ctx.message
@@ -177,34 +183,6 @@ async def dev(ctx, cmd):
                     pass
         await ctx.send('Reloaded all in-development extensions')
         await msg.add_reaction('✅')
-
-
-# Manually updates the seasonal role count
-# See cogs/seasonalRole.py
-@bot.command(name='updatedisplay', aliases=['ud'])
-@commands.is_owner()
-async def updateSeasonalRoleDisplay(ctx):
-    display_channels = [
-        862526927440707614,  # PBT
-        863851458583592991,  # BB
-    ]
-
-    for channel in display_channels:
-        try:
-            ch = discord.utils.get(ctx.guild.voice_channels, id=channel)
-            role = discord.utils.find(lambda r: r.name == 'Sunny 🌞', ctx.guild.roles)
-
-            await ch.edit(name=f'Sunny: {len(role.members)} 🌞')
-
-            embed = discord.Embed(title=f'Display updated manually in guild `{ctx.guild}`', color=0x2ecc71,
-                                  description=f'```{ch.name}```', timestamp=datetime.utcnow())
-            signature(embed)
-
-            await ctx.send(embed=embed)
-            print(f'Display updated manually in {ctx.guild}')
-        except AttributeError:
-            pass
-
 
 # run bot
 bot.run(token)
