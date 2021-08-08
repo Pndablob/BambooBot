@@ -33,30 +33,12 @@ async def on_disconnect():
 
 @bot.event
 async def on_ready():
-    # Wait to give the discord API time to fetch larger guilds (BB)
-    await asyncio.sleep(5)
-
     # Removes 'help' command
     bot.remove_command('help')
 
     # When bot is ready, send ready message
     await bot.change_presence(activity=discord.Game('Bamboo Simulator'))
     print(f'Logged in as {bot.user.name} ({bot.user.id})')
-
-    for guild in bot.guilds:
-        print(f'Logged in {guild} ({guild.id})\nUnavailable? {guild.unavailable}')
-
-    # Loads all cogs on startup
-    for filename in os.listdir('./cogs'):
-        if filename.endswith('.py'):
-            bot.load_extension(f'cogs.{filename[:-3]}')  # Cut last 3 char (.py)
-            print(f'loaded {filename}')
-
-    # Loads all utils on startup
-    for filename in os.listdir('./cogs/utils'):
-        if filename.endswith('.py'):
-            bot.load_extension(f'cogs.utils.{filename[:-3]}')  # Cut last 3 char (.py)
-            print(f'loaded {filename}')
 
     on_ready_channels = [
         820473911753310208
@@ -68,6 +50,25 @@ async def on_ready():
         embed = discord.Embed(title='Bot Connected', color=0x08c744, timestamp=datetime.utcnow())
         signature(embedMessage=embed)
         await ch.send(embed=embed)
+
+
+@bot.event
+async def on_guild_available(guild):
+    print(f'Logged in {guild} ({guild.id})')
+
+    # Checks if guild is BB
+    if guild.id == 450878205294018560:
+        # Loads all cogs on startup
+        for filename in os.listdir('./cogs'):
+            if filename.endswith('.py'):
+                bot.load_extension(f'cogs.{filename[:-3]}')  # Cut last 3 char (.py)
+                print(f'loaded {filename}')
+
+        # Loads all utils on startup
+        for filename in os.listdir('./cogs/utils'):
+            if filename.endswith('.py'):
+                bot.load_extension(f'cogs.utils.{filename[:-3]}')  # Cut last 3 char (.py)
+                print(f'loaded {filename}')
 
 
 @bot.command(aliases=['l'])
