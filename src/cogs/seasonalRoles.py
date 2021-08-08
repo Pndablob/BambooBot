@@ -19,7 +19,9 @@ def signature(embedMessage):
 class seasonalRoles(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        updateDisplay.start(self)
+
+        if not self.updateDisplay.is_running():
+            self.updateDisplay.start()
 
     # Checks when a member has updated their nickname
     @commands.Cog.listener()
@@ -60,37 +62,61 @@ class seasonalRoles(commands.Cog):
             except:
                 pass
 
+    @tasks.loop(minutes=60)
+    async def updateDisplay(self):
+        guilds = [
+            815952235296063549,  # PBT
+            450878205294018560,  # BB
+        ]
+        display_channels = [
+            862526927440707614,  # PBT
+            863851458583592991,  # BB
+        ]
+        seasonal_role = [
+            862520211142869053,  # PBT
+            862837874365300766,  # BB
+        ]
+        logging_channel = self.bot.get_channel(863854481773953055)
 
-@tasks.loop(minutes=60)
-async def updateDisplay(self):
-    guilds = [
-        815952235296063549,  # PBT
-        450878205294018560,  # BB
-    ]
-    display_channels = [
-        862526927440707614,  # PBT
-        863851458583592991,  # BB
-    ]
-    seasonal_role = [
-        862520211142869053,  # PBT
-        862837874365300766,  # BB
-    ]
-    logging_channel = self.bot.get_channel(863854481773953055)
+        for guild_id in guilds:
+            guild = self.bot.get_guild(id=guild_id)
+            index = guilds.index(guild_id)
 
-    for guild_id in guilds:
-        guild = self.bot.get_guild(id=guild_id)
-        index = guilds.index(guild_id)
+            ch = discord.utils.get(guild.voice_channels, id=display_channels[index])
+            role = discord.utils.get(guild.roles, id=seasonal_role[index])
 
-        ch = discord.utils.get(guild.voice_channels, id=display_channels[index])
-        role = discord.utils.get(guild.roles, id=seasonal_role[index])
+            await ch.edit(name=f'Sunny: {len(role.members)} 🌞')
 
-        await ch.edit(name=f'Sunny: {len(role.members)} 🌞')
+            embed = discord.Embed(title=f'Display updated in guild `{guild}`', color=0x2ecc71,
+                                  description=f'```{ch.name}```', timestamp=datetime.utcnow())
+            signature(embed)
 
-        embed = discord.Embed(title=f'Display updated in guild `{guild}`', color=0x2ecc71,
-                              description=f'```{ch.name}```', timestamp=datetime.utcnow())
-        signature(embed)
+            await logging_channel.send(embed=embed)
 
-        await logging_channel.send(embed=embed)
+    # Manually updates the seasonal role count
+    @commands.command(name='updatedisplay', aliases=['ud'])
+    @commands.is_owner()
+    async def updateSeasonalRoleDisplay(self, ctx):
+        display_channels = [
+            862526927440707614,  # PBT
+            863851458583592991,  # BB
+        ]
+
+        for channel in display_channels:
+            try:
+                ch = discord.utils.get(ctx.guild.voice_channels, id=channel)
+                role = discord.utils.find(lambda r: r.name == 'Sunny 🌞', ctx.guild.roles)
+
+                await ch.edit(name=f'Sunny: {len(role.members)} 🌞')
+
+                embed = discord.Embed(title=f'Display updated manually in guild `{ctx.guild}`', color=0x2ecc71,
+                                      description=f'```{ch.name}```', timestamp=datetime.utcnow())
+                signature(embed)
+
+                await ctx.send(embed=embed)
+                print(f'Display updated manually in {ctx.guild}')
+            except AttributeError:
+                pass
 
 
 def setup(bot):

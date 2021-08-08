@@ -20,22 +20,44 @@ def signature(embedMessage):
 class chatUtils(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.checkup.start()
+
+        if not self.checkup.is_running():
+            self.checkup.start()
 
     # Send bot latency
     @commands.command()
     @commands.is_owner()
     async def ping(self, ctx):
-        await ctx.send(f'```md\n# Pong!\n{round(self.bot.latency * 1000)}ms```')
+        embed = discord.Embed(title='Pong! 🏓', description=f'```{round(self.bot.latency * 1000)}ms```',
+                              color=0x2ecc71, timestamp=datetime.utcnow())
+        add_author(embed, ctx.author)
+
+        await ctx.send(embed=embed)
 
     @tasks.loop(hours=1)
     async def checkup(self):
         ch = self.bot.get_channel(820473911753310208)
-        embed = discord.Embed(description=f'```md\n# Ping:\n{round(self.bot.latency * 1000)}ms```', color=0x2ecc71,
-                              timestamp=datetime.utcnow())
+        embed = discord.Embed(title='Pong! 🏓', description=f'```{round(self.bot.latency * 1000)}ms```',
+                              color=0x2ecc71, timestamp=datetime.utcnow())
         signature(embed)
 
         await ch.send(embed=embed)
+
+    @commands.command(aliases=['cf'])
+    @commands.is_owner()
+    async def coinflip(self, ctx):
+        randint = random.randint(0, 1)
+
+        embed = discord.Embed(title='Coinflip:', color=0x2ecc71, timestamp=datetime.utcnow())
+
+        if randint == 0:
+            embed.description = f'```Heads```'
+            embed.set_image(url='https://cdn.discordapp.com/emojis/872621047525040129.png?v=1')
+        elif randint == 1:
+            embed.description = f'```Tails```'
+            embed.set_image(url='https://cdn.discordapp.com/emojis/872621047449546772.png?v=1')
+
+        await ctx.send(embed=embed)
 
     # Generates a random number from 0 to the given ceiling
     @commands.command(name='random', aliases=['rand'])
@@ -112,7 +134,7 @@ class chatUtils(commands.Cog):
             raise error
 
     # sky.shiiyu.moe command
-    @commands.command(aliases=['sc', 'scs'])
+    @commands.command(aliases=['sc'])
     @commands.is_owner()
     async def skycrypt(self, ctx, ign, profile):
         await ctx.send(f'https://sky.shiiyu.moe/stats/{ign}/{profile}')

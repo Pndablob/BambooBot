@@ -4,6 +4,11 @@ import discord
 from discord.ext import commands
 
 
+def add_author(embedMessage, author):
+    # Signs embedded messages with a signature.
+    embedMessage.set_footer(text=f'{author.name}#{author.discriminator}', icon_url=author.avatar_url)
+
+
 def signature(embedMessage):
     # Signs embedded messages with a signature.
     embedMessage.set_footer(text=f'Bamboo Bot by Pnda#9999',
@@ -91,13 +96,20 @@ class userUtils(commands.Cog):
         fields = [
             ('Username', user.mention, False),
             ('User ID', user.id, False),
-            ('Highest Role', user.top_role, False),
-            ('Create Date', user.created_at, False),
-            ('Join Date', user.joined_at, False)
+            ('Create Date', f'<t:{round(user.created_at.timestamp())}:f>', False),
+            ('Join Date', f'<t:{round(user.joined_at.timestamp())}:f>', False)
         ]
-        embed = discord.Embed(title='User Info:', color=0x0565ff, timestamp=datetime.utcnow())
+        user_roles = ""
+
+        embed = discord.Embed(title='User Info:', color=user.color, timestamp=datetime.utcnow())
+        add_author(embed, ctx.author)
         for name, value, inline in fields:
             embed.add_field(name=name, value=value, inline=inline)
+
+        for roles in reversed(user.roles[1:]):
+            user_roles += f'{roles.mention}, '
+        embed.add_field(name=f'Roles [{len(user.roles)-1}]', value=user_roles[:-2])
+
         await ctx.send(embed=embed)
 
 
