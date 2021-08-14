@@ -70,9 +70,9 @@ async def on_guild_available(guild):
                 print(f'loaded {filename}')
 
         # Loads all utils on startup
-        for filename in os.listdir('./cogs/utils'):
+        for filename in os.listdir('utils'):
             if filename.endswith('.py'):
-                bot.load_extension(f'cogs.utils.{filename[:-3]}')  # Cut last 3 char (.py)
+                bot.load_extension(f'utils.{filename[:-3]}')  # Cut last 3 char (.py)
                 print(f'loaded {filename}')
 
 
@@ -86,6 +86,11 @@ async def load(ctx, extension):
             if filename.endswith('.py'):
                 try:
                     bot.load_extension(f'cogs.{filename[:-3]}')  # Cut last 3 char (.py)
+                    print(f'loaded {filename}')
+                except:
+                    pass
+                try:
+                    bot.load_extension(f'utils.{filename[:-3]}')  # Cut last 3 char (.py)
                     print(f'loaded {filename}')
                 except:
                     pass
@@ -115,6 +120,11 @@ async def unload(ctx, extension):
                     print(f'unloaded {filename}')
                 except:
                     pass
+                try:
+                    bot.unload_extension(f'utils.{filename[:-3]}')  # Cut last 3 char (.py)
+                    print(f'unloaded {filename}')
+                except:
+                    pass
         await ctx.send('Unloaded all extensions')
         await msg.add_reaction('✅')
     else:
@@ -138,6 +148,11 @@ async def reload(ctx, extension):
             if filename.endswith('.py'):
                 try:
                     bot.reload_extension(f'cogs.{filename[:-3]}')  # Cut last 3 char (.py)
+                    print(f'reloaded {filename}')
+                except:
+                    pass
+                try:
+                    bot.reload_extension(f'utils.{filename[:-3]}')  # Cut last 3 char (.py)
                     print(f'reloaded {filename}')
                 except:
                     pass

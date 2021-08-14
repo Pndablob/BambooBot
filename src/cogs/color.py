@@ -17,7 +17,6 @@ class colorRoles(commands.Cog):
         # Guild: PBT
         815952833253605426,  # *
         835998900846198795,  # Bot
-
         # Guild: BB
         653624748311576632,  # Staff
         578281324914278410,  # Collaborator
@@ -33,7 +32,6 @@ class colorRoles(commands.Cog):
         792168173448986624,  # 500m Giveaway
         799296425233481779,  # 250m Giveaway
         798764353930264646,  # Bakery Camper (Level 75)
-
         # Guild: TZT
         845089203788578857,  # nerd
     )
