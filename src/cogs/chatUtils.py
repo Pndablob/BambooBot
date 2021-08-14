@@ -3,7 +3,6 @@ from datetime import datetime
 
 import discord
 from discord.ext import commands
-from discord.ext import tasks
 
 
 def add_author(embedMessage, author):
@@ -21,9 +20,6 @@ class chatUtils(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-        if not self.checkup.is_running():
-            self.checkup.start()
-
     # Send bot latency
     @commands.command()
     @commands.is_owner()
@@ -33,15 +29,6 @@ class chatUtils(commands.Cog):
         add_author(embed, ctx.author)
 
         await ctx.send(embed=embed)
-
-    @tasks.loop(hours=1)
-    async def checkup(self):
-        ch = self.bot.get_channel(820473911753310208)
-        embed = discord.Embed(title='Pong! 🏓', description=f'```{round(self.bot.latency * 1000)}ms```',
-                              color=0x2ecc71, timestamp=datetime.utcnow())
-        signature(embed)
-
-        await ch.send(embed=embed)
 
     @commands.command(aliases=['cf'])
     @commands.is_owner()

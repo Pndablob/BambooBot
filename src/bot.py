@@ -1,5 +1,6 @@
-import asyncio
 from datetime import datetime
+import math
+import time
 import os
 
 import discord
@@ -9,6 +10,10 @@ from discord.ext import commands
 token = open("token.txt", "r").read()
 
 bot = commands.Bot(command_prefix='p!', intents=discord.Intents().all())
+
+# Start time (for `uptime` command)
+startTime = round(time.time())
+print(startTime)
 
 
 # 2ecc71 Hex code for color embeds
@@ -184,6 +189,24 @@ async def dev(ctx, cmd):
                     pass
         await ctx.send('Reloaded all in-development extensions')
         await msg.add_reaction('✅')
+
+
+@bot.command(aliases=['ut'])
+@commands.is_owner()
+async def uptime(ctx):
+    timediff = round(time.time() - startTime)  # Seconds since startup
+
+    days = math.floor(timediff / 86400)  # Floor of diff / sec-in-day (86400)
+    hours = math.floor((timediff % 86400) / 3600)  # Floor of (diff mod sec-in-day) / sec-in-hour (3600)
+    minutes = math.floor((timediff % 3600) / 60)  # Floor of (diff mod sec-in-hour) / sec-in-min (60)
+    seconds = (timediff % 60)  # diff mod sec-in-min
+
+    embed = discord.Embed(title=f'<:online:876192917167964230> Uptime', color=0x2ecc71, timestamp=datetime.utcnow(),
+                          description=f'`{days}` days, `{hours}` hours, `{minutes}` minutes, `{seconds}` seconds')
+    signature(embed)
+
+    await ctx.send(embed=embed)
+
 
 # run bot
 bot.run(token)

@@ -102,13 +102,36 @@ class userUtils(commands.Cog):
         user_roles = ""
 
         embed = discord.Embed(title='User Info:', color=user.color, timestamp=datetime.utcnow())
-        add_author(embed, ctx.author)
+        embed.set_thumbnail(url=user.avatar_url)
+        signature(embed)
+
         for name, value, inline in fields:
             embed.add_field(name=name, value=value, inline=inline)
 
         for roles in reversed(user.roles[1:]):
             user_roles += f'{roles.mention}, '
         embed.add_field(name=f'Roles [{len(user.roles)-1}]', value=user_roles[:-2])
+
+        await ctx.send(embed=embed)
+
+    @commands.command(aliases=['rf'])
+    @commands.is_owner()
+    async def roleinfo(self, ctx, role: discord.Role):
+        if role is None:
+            role = ctx.message.author.top_role
+
+        fields = [
+            ('Role ID', role.id, False),
+            ('Color', role.color, False),
+            ('Created At', f'<t:{round(role.created_at.timestamp())}:f>', False),
+            ('Members with role', len(role.members), False),
+            ('Position from top', len(ctx.guild.roles) - role.position, False)
+        ]
+
+        embed = discord.Embed(title=role, description=role.mention, color=role.color, timestamp=datetime.utcnow())
+        add_author(embed, ctx.author)
+        for name, value, inline in fields:
+            embed.add_field(name=name, value=value, inline=inline)
 
         await ctx.send(embed=embed)
 
