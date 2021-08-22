@@ -114,6 +114,7 @@ class userUtils(commands.Cog):
 
         await ctx.send(embed=embed)
 
+    # Sends info about a role
     @commands.command(aliases=['rf'])
     @commands.is_owner()
     async def roleinfo(self, ctx, role: discord.Role):
@@ -134,6 +135,11 @@ class userUtils(commands.Cog):
             embed.add_field(name=name, value=value, inline=inline)
 
         await ctx.send(embed=embed)
+
+    @commands.command(name='block')
+    async def block(self, ctx, user: discord.User):
+        if not user.is_blocked:
+            user
 
 
 def setup(bot):

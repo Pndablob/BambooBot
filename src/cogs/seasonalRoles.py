@@ -49,7 +49,7 @@ class seasonalRoles(commands.Cog):
                 elif "🌞" in after.display_name:
                     await after.add_roles(role)
 
-                embed = discord.Embed(title=f'Nickname Updated: {after.name} ({after.id})', color=0x2ecc71,
+                embed = discord.Embed(title=f'Nickname Updated: ({after.id})', color=0x2ecc71,
                                       description=f'```md\n# {after.guild}```', timestamp=datetime.utcnow())
                 embed.add_field(name='Nickname Before:', value=f'```{before.display_name}```', inline=False)
                 embed.add_field(name='Nickname After:', value=f'```{after.display_name}```', inline=False)

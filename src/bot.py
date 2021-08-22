@@ -6,14 +6,13 @@ import os
 import discord
 from discord.ext import commands
 
-
 token = open("token.txt", "r").read()
 
 bot = commands.Bot(command_prefix='p!', intents=discord.Intents().all())
 
 # Start time (for `uptime` command)
 startTime = round(time.time())
-print(startTime)
+print(datetime.utcnow())
 
 
 # 2ecc71 Hex code for color embeds
@@ -39,7 +38,7 @@ async def on_disconnect():
 @bot.event
 async def on_ready():
     # Removes 'help' command
-    bot.remove_command('help')
+    bot.help_command = None
 
     # When bot is ready, send ready message
     await bot.change_presence(activity=discord.Game('Bamboo Simulator'))
