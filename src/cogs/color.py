@@ -103,7 +103,7 @@ class colorRoles(commands.Cog):
                     if colorRole in user.roles:
                         await user.remove_roles(colorRole)
 
-        if color.title() == 'Clear':
+        if color.title() == 'Clear' or color.title() == 'Remove' or color.title() == 'None':
             await clear_color_roles()
 
             embed = discord.Embed(title='Color Roles Cleared', description=f'Your color roles have been removed',
