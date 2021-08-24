@@ -1,3 +1,4 @@
+import asyncio
 from datetime import datetime
 import math
 import time
@@ -80,16 +81,11 @@ async def on_guild_available(guild):
 async def load(ctx, extension):
     msg = ctx.message
 
-    if extension.casefold() == 'all':
+    if extension.lower() == 'all':
         for filename in os.listdir('./cogs'):
             if filename.endswith('.py'):
                 try:
                     bot.load_extension(f'cogs.{filename[:-3]}')  # Cut last 3 char (.py)
-                    print(f'loaded {filename}')
-                except:
-                    pass
-                try:
-                    bot.load_extension(f'utils.{filename[:-3]}')  # Cut last 3 char (.py)
                     print(f'loaded {filename}')
                 except:
                     pass
@@ -111,16 +107,11 @@ async def load(ctx, extension):
 async def unload(ctx, extension):
     msg = ctx.message
 
-    if extension.casefold() == 'all':
+    if extension.lower() == 'all':
         for filename in os.listdir('./cogs'):
             if filename.endswith('.py'):
                 try:
                     bot.unload_extension(f'cogs.{filename[:-3]}')  # Cut last 3 char (.py)
-                    print(f'unloaded {filename}')
-                except:
-                    pass
-                try:
-                    bot.unload_extension(f'utils.{filename[:-3]}')  # Cut last 3 char (.py)
                     print(f'unloaded {filename}')
                 except:
                     pass
@@ -142,16 +133,11 @@ async def unload(ctx, extension):
 async def reload(ctx, extension):
     msg = ctx.message
 
-    if extension.casefold() == 'all':
+    if extension.lower() == 'all':
         for filename in os.listdir('./cogs'):
             if filename.endswith('.py'):
                 try:
                     bot.reload_extension(f'cogs.{filename[:-3]}')  # Cut last 3 char (.py)
-                    print(f'reloaded {filename}')
-                except:
-                    pass
-                try:
-                    bot.reload_extension(f'utils.{filename[:-3]}')  # Cut last 3 char (.py)
                     print(f'reloaded {filename}')
                 except:
                     pass
@@ -166,43 +152,6 @@ async def reload(ctx, extension):
         except:
             await ctx.send("Extension already reloaded or doesn't exist")
             await msg.add_reaction('❌')
-
-
-@bot.command(name='dev')
-@commands.is_owner()
-async def dev(ctx, cmd):
-    msg = ctx.message
-
-    if cmd == 'unload':
-        for filename in os.listdir('./in-dev'):
-            if filename.endswith('.py'):
-                try:
-                    bot.unload_extension(f'in-dev.{filename[:-3]}')
-                    print(f'unloaded {filename}')
-                except:
-                    pass
-        await ctx.send('Unloaded all in-development extensions')
-        await msg.add_reaction('✅')
-    elif cmd == 'load':
-        for filename in os.listdir('./in-dev'):
-            if filename.endswith('.py'):
-                try:
-                    bot.load_extension(f'in-dev.{filename[:-3]}')
-                    print(f'loaded {filename}')
-                except:
-                    pass
-        await ctx.send('Loaded all in-development extensions')
-        await msg.add_reaction('✅')
-    elif cmd == 'reload':
-        for filename in os.listdir('./in-dev'):
-            if filename.endswith('.py'):
-                try:
-                    bot.reload_extension(f'in-dev.{filename[:-3]}')
-                    print(f'reloaded {filename}')
-                except:
-                    pass
-        await ctx.send('Reloaded all in-development extensions')
-        await msg.add_reaction('✅')
 
 
 @bot.command(aliases=['ut'])
@@ -221,6 +170,14 @@ async def uptime(ctx):
 
     await ctx.send(embed=embed)
 
+
+"""@bot.commands(name='fixrole')
+@commands.is_owner()
+async def fixSeasonalRole(ctx):
+    guild = ctx.guild
+
+    for members in guild.members:
+        await asyncio.sleep(0.25)"""
 
 # run bot
 bot.run(token)

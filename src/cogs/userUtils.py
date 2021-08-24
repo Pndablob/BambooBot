@@ -84,8 +84,6 @@ class userUtils(commands.Cog):
             for attachments in message.attachments:
                 await channel.send(attachments)
 
-        await self.bot.process_commands(message)
-
     # Sends info about a user
     @commands.command(pass_context=True)
     @commands.is_owner()
@@ -110,7 +108,7 @@ class userUtils(commands.Cog):
 
         for roles in reversed(user.roles[1:]):
             user_roles += f'{roles.mention}, '
-        embed.add_field(name=f'Roles [{len(user.roles)-1}]', value=user_roles[:-2])
+        embed.add_field(name=f'Roles [{len(user.roles) - 1}]', value=user_roles[:-2])
 
         await ctx.send(embed=embed)
 

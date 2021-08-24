@@ -18,7 +18,7 @@ class tags(commands.Cog):
     async def _tags(self, ctx):
         tags_list = []
 
-        
+        print(tags.get_commands(self))
 
         embed = discord.Embed(title='Tags', color=0x2ecc71, timestamp=datetime.utcnow())
 

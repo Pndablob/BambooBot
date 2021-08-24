@@ -14,15 +14,14 @@ class pingfaq(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    # Replies a cool message if pinged
     @commands.Cog.listener("on_message")
     @commands.is_owner()
     async def on_message(self, message):
         # Pass context
         ctx = await self.bot.get_context(message)
 
-        if not self.bot.user.mentioned_in(message) or message.author == self.bot.user.id:
-            # Only if bot was mentioned and message was not from bot
+        if not isinstance(message.channel, discord.TextChannel) or message.author == self.bot.user.id:
+            # Only in a text channel and message was not from bot
             return
 
         replies = [
@@ -42,29 +41,22 @@ class pingfaq(commands.Cog):
             f"Sometimes I try to ping bots and this happens 😦",
         ]
 
-        rand_index = random.randint(0, len(replies))
-        print(rand_index)
+        # Replies a cool message if pinged
+        if self.bot.user.mentioned_in(message):
+            rand_index = random.randint(0, len(replies))
+            print(rand_index)
 
-        if rand_index == (len(replies)):
-            embed = discord.Embed(title=f'Problem?', color=0x2ECC71, timestamp=datetime.utcnow(),
-                                  description=f'Click [here](https://www.youtube.com/watch?v=2ocykBzWDiM) 🙂')
-            embed.set_footer(text=f'Triggered by {message.author}',
-                             icon_url=message.author.avatar_url)
-            await ctx.send(embed=embed)
-        else:
-            await ctx.send(replies[rand_index])
+            if rand_index == (len(replies)):
+                embed = discord.Embed(title=f'Problem?', color=0x2ECC71, timestamp=datetime.utcnow(),
+                                      description=f'Click [here](https://www.youtube.com/watch?v=2ocykBzWDiM) 🙂')
+                embed.set_footer(text=f'Triggered by {message.author}',
+                                 icon_url=message.author.avatar_url)
+                await ctx.send(embed=embed)
+            else:
+                await ctx.send(replies[rand_index])
 
-    # Dead chat
-    @commands.Cog.listener("on_message")
-    @commands.is_owner()
-    async def on_message(self, message):
-        ctx = await self.bot.get_context(message)
-
-        if not isinstance(message.channel, discord.TextChannel) or message.author == self.bot.user.id:
-            # Only in a text (guild) channel and message was not from bot
-            return
-
-        if "dead chat" in message.content.lower():
+        # Dead chat
+        elif "dead chat" in message.content.lower():
             if "chat killer" in str(message.author.nick).lower():
                 await ctx.send(f"Hey don't look at me; blame yourself! <a:trolling:878127387336933376>")
             elif await self.bot.is_owner(message.author):
