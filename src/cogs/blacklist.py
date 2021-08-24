@@ -25,7 +25,8 @@ class blacklist(commands.Cog):
     # Filter for blacklisted strings
     @commands.Cog.listener("on_message")
     async def on_message(self, message):
-        if not isinstance(message.channel, discord.TextChannel) or message.author.id == self.bot.user.id or message.guild.id == 450878205294018560:
+        if not isinstance(message.channel,
+                          discord.TextChannel) or message.author.id == self.bot.user.id or message.guild.id == 450878205294018560:
             # Only in a text (guild) channel and message was not from bot
             return
 
@@ -55,7 +56,7 @@ class blacklist(commands.Cog):
 
         # Checks messages for blacklisted words
         for i in range(len(blacklisted_words)):
-            if f' {blacklisted_words[i]} ' in msg or msg.startswith(f'{blacklisted_words[i]}'):
+            if f' {blacklisted_words[i]} ' in msg or f' {blacklisted_words[i]}' in msg or f'{blacklisted_words[i]} ' in msg or msg.startswith(f'{blacklisted_words[i]}') or msg.endswith(f'{blacklisted_words[i]}'):
                 await message.delete()
 
                 embed = discord.Embed(title='Bad Word!', color=0xff0000, timestamp=datetime.utcnow(),
