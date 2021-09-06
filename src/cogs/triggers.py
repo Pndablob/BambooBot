@@ -23,6 +23,9 @@ class pingfaq(commands.Cog):
         if not isinstance(message.channel, discord.TextChannel) or message.author == self.bot.user.id:
             # Only in a text channel and message was not from bot
             return
+        if not message.author.id == 317751950441447435:
+            # Only for bot owner
+            return
 
         replies = [
             "Pong!",

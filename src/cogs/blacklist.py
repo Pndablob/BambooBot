@@ -47,16 +47,20 @@ class blacklist(commands.Cog):
         ]
 
         # Checks if user has a bypass role
-        for roles in message.author.roles:
-            if roles.id in bypass_roles:
-                # Does not blacklist users with bypass roles
-                return
+        try:
+            for roles in message.author.roles:
+                if roles.id in bypass_roles:
+                    # Does not blacklist users with bypass roles
+                    return
+        except AttributeError:
+            return
 
         msg = message.content.lower()
 
         # Checks messages for blacklisted words
         for i in range(len(blacklisted_words)):
-            if f' {blacklisted_words[i]} ' in msg or f' {blacklisted_words[i]}' in msg or f'{blacklisted_words[i]} ' in msg or msg.startswith(f'{blacklisted_words[i]}') or msg.endswith(f'{blacklisted_words[i]}'):
+            if f' {blacklisted_words[i]} ' in msg or f' {blacklisted_words[i]}' in msg or f'{blacklisted_words[i]} ' in msg or msg.startswith(
+                    f'{blacklisted_words[i]}') or msg.endswith(f'{blacklisted_words[i]}'):
                 await message.delete()
 
                 embed = discord.Embed(title='Bad Word!', color=0xff0000, timestamp=datetime.utcnow(),
