@@ -28,6 +28,13 @@ class _eval(commands.Cog):
     async def eval(self, ctx, *, code):
         str_obj = io.StringIO()  # Retrieves a stream of data
 
+        if "token" in code:
+            await ctx.send('No token in eval')
+            return
+        elif ("channel.delete" or "guild.delete") in code:
+            await ctx.send('No deleting things in eval')
+            return
+
         cleaned_code = clean_code(code)  # Removing code block segments
 
         if code.startswith('```py'):

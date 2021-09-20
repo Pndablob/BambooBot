@@ -89,7 +89,6 @@ class chatUtils(commands.Cog):
     @commands.command(aliases=['purge'])
     @commands.has_permissions(manage_messages=True)
     @commands.bot_has_permissions(manage_messages=True)
-    @commands.is_owner()
     async def clear(self, ctx, amount):
         await ctx.channel.purge(limit=int(amount) + 1)
         await ctx.send(f'Purged **{amount}** messages in {ctx.channel.mention}')
@@ -105,8 +104,8 @@ class chatUtils(commands.Cog):
 
     # Sets the slowmode of a channel
     @commands.command(aliases=['sm'])
+    @commands.has_permissions(manage_messages=True, manage_server=True)
     @commands.bot_has_permissions(manage_messages=True, manage_channels=True)
-    @commands.is_owner()
     async def slowmode(self, ctx, delay: int):
         await ctx.channel.edit(slowmode_delay=delay)
         await ctx.send(f'Set the slowmode delay in {ctx.channel.mention} to `{delay}` seconds')

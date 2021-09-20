@@ -171,13 +171,26 @@ async def uptime(ctx):
     await ctx.send(embed=embed)
 
 
-"""@bot.commands(name='fixrole')
+# Verifies all users --> gives the 'Biscuit' role in BB
+@bot.command(name='verifyall')
 @commands.is_owner()
-async def fixSeasonalRole(ctx):
-    guild = ctx.guild
+async def manuallyVerifyAll(ctx):
+    role = discord.utils.get(ctx.guild.roles, id=472841496639307776)  # 'Biscuit' role
+    msg = await ctx.send('Manually verifying all users...')
+    i = 0
 
-    for members in guild.members:
-        await asyncio.sleep(0.25)"""
+    for user in ctx.guild.members:
+        if role not in user.roles:
+            if len(msg.content) > 1950:
+                await user.add_roles(role)
+                msg = await ctx.send(f'\nVerified `{user}`')
+            else:
+                await user.add_roles(role)
+                await msg.edit(content=msg.content + f'\nVerified `{user}`')
+
+            i += 1
+    await msg.edit(content=msg.content + f'\n\nDone! Manually verified `{i}` users')
+
 
 # run bot
 bot.run(token)
