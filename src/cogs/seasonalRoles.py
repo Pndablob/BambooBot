@@ -22,31 +22,15 @@ class seasonalRoles(commands.Cog):
 
     # Checks when a member has updated their nickname
     @commands.Cog.listener()
-    @commands.has_any_role(
-        # BB
-        653624748311576632,  # Staff
-        578281324914278410,  # Collaborator
-        617803927240310823,  # Ebic Translator
-        733448745517187134,  # Patron
-        614357920351649805,  # Nitro Booster
-        673728339076317184,  # Epic Coders
-        623288545439645706,  # Partners
-        646106899737083945,  # Hypixel Staffy People
-        603719761934942238,  # Creator
-        472841524804190208,  # Friend
-        726301638679199744,  # Giveaway 15m
-        517488615694008321,  # Cool Green Role
-        798764352823623720,  # Level 50
-    )
     async def on_member_update(self, before, after):
-        role = discord.utils.find(lambda r: r.name == 'Sunny 🌞', after.guild.roles)
+        role = discord.utils.find(lambda r: r.name == 'Spook', after.guild.roles)
         logging_channel = self.bot.get_channel(863854481773953055)
 
         if before.display_name != after.display_name:
             try:
-                if after.display_name is None or "🌞" not in after.display_name:
+                if after.display_name is None or "🎃" not in after.display_name:
                     await after.remove_roles(role)
-                elif "🌞" in after.display_name:
+                elif "🎃" in after.display_name:
                     await after.add_roles(role)
 
                 embed = discord.Embed(title=f'Nickname Updated: ({after.id})', color=0x2ecc71,
@@ -71,9 +55,9 @@ class seasonalRoles(commands.Cog):
         for channel in display_channels:
             try:
                 ch = discord.utils.get(ctx.guild.voice_channels, id=channel)
-                role = discord.utils.find(lambda r: r.name == 'Sunny 🌞', ctx.guild.roles)
+                role = discord.utils.find(lambda r: r.name == 'Spook', ctx.guild.roles)
 
-                await ch.edit(name=f'Sunny: {len(role.members)} 🌞')
+                await ch.edit(name=f'Spooky: {len(role.members)} 🎃')
 
                 embed = discord.Embed(title=f'Display updated manually in guild `{ctx.guild}`', color=0x2ecc71,
                                       description=f'```{ch.name}```', timestamp=datetime.utcnow())
@@ -83,6 +67,21 @@ class seasonalRoles(commands.Cog):
                 print(f'Display updated manually in {ctx.guild}')
             except AttributeError:
                 pass
+
+    # Gives all users with a 🎃 in nickname, the spooky role
+    @commands.command(name='fixrole')
+    @commands.is_owner()
+    async def fixSeasonalRole(self, ctx):
+        role = discord.utils.get(ctx.guild.roles, id=862837874365300766)  # sunny role
+        msg = await ctx.send('Fixing seasonal role...')
+        i = 0
+
+        for user in ctx.guild.members:
+            if "🎃" in str(user.nick) and role not in user.roles:
+                await user.add_roles(role)
+                await msg.edit(content=msg.content + f'\nAdded role to `{user}`')
+                i += 1
+        await msg.edit(content=msg.content + f'\n\nDone! Added roles to `{i}` users')
 
 
 def setup(bot):

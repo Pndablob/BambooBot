@@ -15,18 +15,16 @@ class blacklist(commands.Cog):
         self.bot = bot
         global blacklisted_words
         blacklisted_words = [
-            "fuck", "bitch", "dick", "cock", "pussy", "fag", "slut", "douche", "cunt", "porn", "nigger", "faggot",
-            "niggar", "fck", "retarded", "horny", "f​uck", "jizz", "asshole", "cuck", "retard", "dicks", "cocks",
-            "vagina", "boob", "pussies", "cunts", "titty", "tittie", "ejaculate", "faggots", "nazi", "nazis", "nigga",
-            "niggas", "niggers", "sex", "pedo", "seks", "whore", "anus", "anul", "penis", "hentai", "nude", "cum",
-            "rape", "semen"
+            "bitch", "dick", "cock", "pussy", "fag", "slut", "douche", "cunt", "porn", "nigger", "faggot", "niggar",
+            "retarded", "horny", "jizz", "asshole", "cuck", "retard", "dicks", "cocks", "vagina", "boob", "pussies",
+            "cunts", "titty", "tittie", "ejaculate", "faggots", "nazi", "nazis", "nigga", "niggas", "niggers", "sex",
+            "pedo", "seks", "whore", "anus", "anul", "penis", "hentai", "nude", "cum", "rape", "semen"
         ]
 
     # Filter for blacklisted strings
     @commands.Cog.listener("on_message")
     async def on_message(self, message):
-        if not isinstance(message.channel,
-                          discord.TextChannel) or message.author.id == self.bot.user.id or message.guild.id == 450878205294018560:
+        if not isinstance(message.channel, discord.TextChannel) or message.author.id == self.bot.user.id or message.guild.id == 450878205294018560:
             # Only in a text (guild) channel and message was not from bot
             return
 

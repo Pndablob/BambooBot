@@ -67,6 +67,20 @@ class pingfaq(commands.Cog):
             else:
                 await ctx.send(f"Complaining won't do anything about it <a:rageblob:810669822060134440>")
 
+        # e
+        elif message.content.lower() == "e":
+            await message.add_reaction('🇪')
+        elif message.content.lower() == "a":
+            await message.add_reaction('🇦')
+
+        # pnda
+        elif message.content.lower() == "pnda":
+            await message.add_reaction("<:pnda:883106013723623434>")
+
+        # boofed
+        elif message.content.lower() == "boofed" or message.content.lower() == "boofed!":
+            await message.add_reaction("<:boofed:881697731658256384>")
+
 
 def setup(bot):
     bot.add_cog(pingfaq(bot))
