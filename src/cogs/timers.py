@@ -52,13 +52,13 @@ class timers(commands.Cog):
         logging_channel = self.bot.get_channel(863854481773953055)
 
         for guild_id in guilds:
-            guild = self.bot.get_guild(id=guild_id)
+            guild = self.bot.get_guild(guild_id)
             index = guilds.index(guild_id)
 
             ch = discord.utils.get(guild.voice_channels, id=display_channels[index])
             role = discord.utils.get(guild.roles, id=seasonal_role[index])
 
-            await ch.edit(name=f'Sunny: {len(role.members)} 🌞')
+            await ch.edit(name=f'Spooky: {len(role.members)} 🎃')
 
             embed = discord.Embed(title=f'Display updated in guild `{guild}`', color=0x2ecc71,
                                   description=f'```{ch.name}```', timestamp=datetime.utcnow())
@@ -77,7 +77,7 @@ class timers(commands.Cog):
         logging_channel = self.bot.get_channel(863648426055041054)
 
         for guild_id in guilds:
-            guild = self.bot.get_guild(id=guild_id)
+            guild = self.bot.get_guild(guild_id)
             index = guilds.index(guild_id)
 
             ch = discord.utils.get(guild.voice_channels, id=display_channels[index])

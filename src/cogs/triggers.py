@@ -82,6 +82,5 @@ class pingfaq(commands.Cog):
             await message.add_reaction("<:boofed:881697731658256384>")
 
 
-
 def setup(bot):
     bot.add_cog(pingfaq(bot))

@@ -31,7 +31,6 @@ class chatUtils(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command(aliases=['cf'])
-    @commands.is_owner()
     async def coinflip(self, ctx):
         randint = random.randint(0, 1)
 
@@ -48,7 +47,6 @@ class chatUtils(commands.Cog):
 
     # Generates a random number from 0 to the given ceiling
     @commands.command(name='random', aliases=['rand'])
-    @commands.is_owner()
     async def random_number(self, ctx, ceiling, repeat=1, dupes=False, stats=True):
         nums = []
         numcount = ''
@@ -104,7 +102,7 @@ class chatUtils(commands.Cog):
 
     # Sets the slowmode of a channel
     @commands.command(aliases=['sm'])
-    @commands.has_permissions(manage_messages=True, manage_server=True)
+    @commands.has_permissions(manage_messages=True)
     @commands.bot_has_permissions(manage_messages=True, manage_channels=True)
     async def slowmode(self, ctx, delay: int):
         await ctx.channel.edit(slowmode_delay=delay)
@@ -121,7 +119,6 @@ class chatUtils(commands.Cog):
 
     # sky.shiiyu.moe command
     @commands.command(aliases=['sc'])
-    @commands.is_owner()
     async def skycrypt(self, ctx, ign, profile):
         await ctx.send(f'https://sky.shiiyu.moe/stats/{ign}/{profile}')
 
