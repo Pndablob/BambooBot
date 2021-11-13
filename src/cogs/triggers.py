@@ -42,12 +42,14 @@ class pingfaq(commands.Cog):
             "e",
             f"Hey {message.author.mention}, How Play Game?",
             f"Sometimes I try to ping bots and this happens 😦",
+            f"Nice weather today"
+            f"It's nighttime somewhere 💤"
+            f""
         ]
 
         # Replies a cool message if pinged
         if self.bot.user.mentioned_in(message):
             rand_index = random.randint(0, len(replies))
-            print(rand_index)
 
             if rand_index == (len(replies)):
                 embed = discord.Embed(title=f'Problem?', color=0x2ECC71, timestamp=datetime.utcnow(),
@@ -80,6 +82,11 @@ class pingfaq(commands.Cog):
         # boofed
         elif message.content.lower() == "boofed" or message.content.lower() == "boofed!":
             await message.add_reaction("<:boofed:881697731658256384>")
+
+        # Autoreact #server-boosts
+        elif message.channel.id == 601704296324661283: # server-boosts
+            await message.add_reaction("<a:nitroboost:876197535096651836>")
+            await ctx.send(f"Thank you {message.author.mention} for boosting the server! <a:nitroboost:876197535096651836>")
 
 
 def setup(bot):

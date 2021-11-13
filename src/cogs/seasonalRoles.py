@@ -1,6 +1,5 @@
 import discord
 from discord.ext import commands
-from discord.ext import tasks
 
 from datetime import datetime
 
@@ -76,10 +75,16 @@ class seasonalRoles(commands.Cog):
         msg = await ctx.send('Fixing seasonal role...')
         i = 0
 
+        # Add roles
         for user in ctx.guild.members:
             if "🎃" in str(user.nick) and role not in user.roles:
-                await user.add_roles(role)
-                await msg.edit(content=msg.content + f'\nAdded role to `{user}`')
+                if len(msg.content) > 1950:
+                    await user.add_roles(role)
+                    msg = await ctx.send(f'\nAdded role to `{user}`')
+                else:
+                    await user.add_roles(role)
+                    await msg.edit(content=msg.content + f'\nAdded role to `{user}`')
+
                 i += 1
         await msg.edit(content=msg.content + f'\n\nDone! Added roles to `{i}` users')
 
