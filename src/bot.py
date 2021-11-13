@@ -1,4 +1,3 @@
-import asyncio
 from datetime import datetime
 import math
 import time
@@ -67,12 +66,6 @@ async def on_guild_available(guild):
         for filename in os.listdir('./cogs'):
             if filename.endswith('.py'):
                 bot.load_extension(f'cogs.{filename[:-3]}')  # Cut last 3 char (.py)
-                print(f'loaded {filename}')
-
-        # Loads all utils on startup
-        for filename in os.listdir('utils'):
-            if filename.endswith('.py'):
-                bot.load_extension(f'utils.{filename[:-3]}')  # Cut last 3 char (.py)
                 print(f'loaded {filename}')
 
 
