@@ -134,11 +134,6 @@ class userUtils(commands.Cog):
 
         await ctx.send(embed=embed)
 
-    @commands.command(name='block')
-    async def block(self, ctx, user: discord.User):
-        if not user.is_blocked:
-            user
-
 
 def setup(bot):
     bot.add_cog(userUtils(bot))
