@@ -46,7 +46,7 @@ class chatUtils(commands.Cog):
         await ctx.send(embed=embed)
 
     # Generates a random number from 0 to the given ceiling
-    @commands.command(name='random', aliases=['rand'])
+    @commands.command(name='random', aliases=['rand', 'rng'])
     async def random_number(self, ctx, ceiling, repeat=1, dupes=False, stats=True):
         nums = []
         numcount = ''
