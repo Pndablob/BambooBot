@@ -9,7 +9,7 @@ from discord.ext import commands
 
 token = open("token.txt", "r").read()
 
-bot = commands.Bot(command_prefix='p!', intents=discord.Intents().all())
+bot = commands.Bot(command_prefix=['p!', 'P!'], intents=discord.Intents().all())
 
 # Start time (for `uptime` command)
 startTime = round(time.time())
@@ -17,9 +17,9 @@ print(datetime.utcnow())
 
 
 # 2ecc71 Hex code for color embeds
-def signature(embedMessage):
+def signature(embed):
     # Signs embedded messages with a signature.
-    embedMessage.set_footer(text=f'Bamboo Bot by Pnda#9999',
+    embed.set_footer(text=f'Bamboo Bot by Pnda#9999',
                             icon_url='https://cdn.discordapp.com/emojis/851191181315538965.png?v=1')
 
 
@@ -53,7 +53,7 @@ async def on_ready():
     for on_ready_channels in on_ready_channels:
         ch = bot.get_channel(on_ready_channels)
         embed = discord.Embed(title='Bot Connected', color=0x08c744, timestamp=datetime.utcnow())
-        signature(embedMessage=embed)
+        signature(embed=embed)
         await ch.send(embed=embed)
 
 
@@ -148,7 +148,7 @@ async def reload(ctx, extension):
             await msg.add_reaction('❌')
 
 
-@bot.command(aliases=['ut'])
+@bot.command(name='uptime', aliases=['ut'])
 @commands.is_owner()
 async def uptime(ctx):
     timediff = round(time.time() - startTime)  # Seconds since startup
@@ -168,7 +168,7 @@ async def uptime(ctx):
 # Verifies all users --> gives the 'Biscuit' role in BB
 @bot.command(name='verifyall')
 @commands.is_owner()
-async def manuallyVerifyAll(ctx):
+async def BB_verify_all(ctx):
     role = discord.utils.get(ctx.guild.roles, id=472841496639307776)  # 'Biscuit' role
     msg = await ctx.send('Manually verifying all users...')
     i = 0
