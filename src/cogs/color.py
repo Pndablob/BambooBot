@@ -28,10 +28,10 @@ class colorRoles(commands.Cog):
         646106899737083945,  # Hypixel Staffy People
         603719761934942238,  # Creator
         472841524804190208,  # Friend
-        825256068607115275,  # 1b Giveaway
-        792168173448986624,  # 500m Giveaway
-        799296425233481779,  # 250m Giveaway
-        798764353930264646,  # Bakery Camper (Level 75)
+        638208291469656103,  # Small Creator
+        620718100320354316,  # Contributor
+        726301638679199744,  # 15m Giveaway
+        798764137936977952,  # New Biscuit (Level 10)
         # Guild: TZT
         845089203788578857,  # nerd
     )

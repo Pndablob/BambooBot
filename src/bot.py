@@ -2,6 +2,7 @@ from datetime import datetime
 import math
 import time
 import os
+import logging
 
 import discord
 from discord.ext import commands
@@ -24,12 +25,12 @@ def signature(embedMessage):
 
 @bot.event
 async def on_connect():
-    print('Bot connected')
+    logging.info('Bot connected')
 
 
 @bot.event
 async def on_disconnect():
-    print('Bot disconnected')
+    logging.warning("Bot disconnected")
     ch = bot.get_channel(820473911753310208)
 
     await ch.send(f'```md\n# Bot disconnected```')
@@ -42,7 +43,7 @@ async def on_ready():
 
     # When bot is ready, send ready message
     await bot.change_presence(activity=discord.Game('Bamboo Simulator'))
-    print(f'Logged in as {bot.user.name} ({bot.user.id})')
+    logging.info(f'Logged in as {bot.user.name} ({bot.user.id})')
 
     on_ready_channels = [
         820473911753310208
@@ -58,7 +59,7 @@ async def on_ready():
 
 @bot.event
 async def on_guild_available(guild):
-    print(f'Logged in {guild} ({guild.id})')
+    logging.info(f'Logged in {guild} ({guild.id})')
 
     # Checks if guild is BB
     if guild.id == 450878205294018560:
@@ -66,7 +67,7 @@ async def on_guild_available(guild):
         for filename in os.listdir('./cogs'):
             if filename.endswith('.py'):
                 bot.load_extension(f'cogs.{filename[:-3]}')  # Cut last 3 char (.py)
-                print(f'loaded {filename}')
+                logging.info(f'loaded {filename}')
 
 
 @bot.command(aliases=['l'])
@@ -79,7 +80,7 @@ async def load(ctx, extension):
             if filename.endswith('.py'):
                 try:
                     bot.load_extension(f'cogs.{filename[:-3]}')  # Cut last 3 char (.py)
-                    print(f'loaded {filename}')
+                    logging.info(f'loaded {filename}')
                 except:
                     pass
         await ctx.send('Loaded all extensions')
@@ -105,7 +106,7 @@ async def unload(ctx, extension):
             if filename.endswith('.py'):
                 try:
                     bot.unload_extension(f'cogs.{filename[:-3]}')  # Cut last 3 char (.py)
-                    print(f'unloaded {filename}')
+                    logging.warning(f'unloaded {filename}')
                 except:
                     pass
         await ctx.send('Unloaded all extensions')
@@ -114,7 +115,7 @@ async def unload(ctx, extension):
         try:
             bot.unload_extension(f'cogs.{extension}')
             await ctx.send(f'Unloaded `{extension}.py`')
-            print(f'unloaded {extension}.py')
+            logging.warning(f'unloaded {extension}.py')
             await msg.add_reaction('✅')
         except:
             await ctx.send("Extension already unloaded or doesn't exist")
@@ -131,7 +132,7 @@ async def reload(ctx, extension):
             if filename.endswith('.py'):
                 try:
                     bot.reload_extension(f'cogs.{filename[:-3]}')  # Cut last 3 char (.py)
-                    print(f'reloaded {filename}')
+                    logging.warning(f'reloaded {filename}')
                 except:
                     pass
         await ctx.send('Reloaded all extensions')
@@ -140,7 +141,7 @@ async def reload(ctx, extension):
         try:
             bot.reload_extension(f'cogs.{extension}')
             await ctx.send(f'Reloaded `{extension}.py`')
-            print(f'reloaded {extension}.py')
+            logging.warning(f'reloaded {extension}.py')
             await msg.add_reaction('✅')
         except:
             await ctx.send("Extension already reloaded or doesn't exist")
