@@ -24,7 +24,7 @@ class timers(commands.Cog):
         if not self.updateMemberCount.is_running():
             self.updateMemberCount.start()
 
-    # Sends bot latency ever 2 hours
+    # Sends bot latency every 2 hours
     @tasks.loop(hours=2)
     async def checkup(self):
         ch = self.bot.get_channel(820473911753310208)
@@ -60,13 +60,14 @@ class timers(commands.Cog):
 
             await ch.edit(name=f'Snowy: {len(role.members)} ❄')
 
-            embed = discord.Embed(title=f'Display updated in guild `{guild}`', color=0x2ecc71,
+            embed = discord.Embed(title=f'Display updated in `{guild}`', color=0x2ecc71,
                                   description=f'```{ch.name}```', timestamp=datetime.utcnow())
             signature(embed)
 
             await logging_channel.send(embed=embed)
 
-    @tasks.loop(minutes=30)
+    # Updates server member count display every hour
+    @tasks.loop(minutes=60)
     async def updateMemberCount(self):
         guilds = [
             450878205294018560,  # BB
@@ -74,7 +75,7 @@ class timers(commands.Cog):
         display_channels = [
             876187337174970418,  # BB
         ]
-        logging_channel = self.bot.get_channel(863648426055041054)
+        logging_channel = self.bot.get_channel(863648426055041054)  # PBT
 
         for guild_id in guilds:
             guild = self.bot.get_guild(guild_id)
@@ -84,7 +85,7 @@ class timers(commands.Cog):
 
             await ch.edit(name=f'Members: {guild.member_count}')
 
-            embed = discord.Embed(title=f'Member count updated', color=0x2ecc71,
+            embed = discord.Embed(title=f'Member count updated in `{guild}`', color=0x2ecc71,
                                   description=f'```{ch.name}```', timestamp=datetime.utcnow())
             signature(embed)
 

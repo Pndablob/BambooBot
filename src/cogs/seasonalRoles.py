@@ -77,7 +77,7 @@ class seasonalRoles(commands.Cog):
 
         # Add roles
         for user in ctx.guild.members:
-            if "❄" in str(user.nick) and role not in user.roles:
+            if ("❄" in str(user.nick) or "⛄" in str(user.nick)) and role not in user.roles:
                 if len(msg.content) > 1950:
                     await user.add_roles(role)
                     msg = await ctx.send(f'\nAdded role to `{user}`')
@@ -98,7 +98,7 @@ class seasonalRoles(commands.Cog):
 
         # Add roles
         for user in ctx.guild.members:
-            if "❄" not in str(user.nick) and role in user.roles:
+            if ("❄" not in str(user.nick) or "⛄" not in str(user.nick)) and role in user.roles:
                 if len(msg.content) > 1950:
                     await user.remove_roles(role)
                     msg = await ctx.send(f'\nRemoved role from `{user}`')

@@ -43,7 +43,7 @@ class pingfaq(commands.Cog):
             f"Hey {message.author.mention}, How Play Game?",
             f"Sometimes I try to ping bots and this happens 😦",
             f"Nice weather today"
-            f"It's nighttime somewhere 💤"
+            f"It's night time somewhere 💤"
             f""
         ]
 
@@ -84,7 +84,7 @@ class pingfaq(commands.Cog):
             await message.add_reaction("<:boofed:881697731658256384>")
 
         # Autoreact #server-boosts
-        elif message.channel.id == 601704296324661283: # server-boosts
+        elif message.channel.id == 601704296324661283:  # server-boosts
             await message.add_reaction("<a:nitroboost:876197535096651836>")
             await ctx.send(f"Thank you {message.author.mention} for boosting the server! <a:nitroboost:876197535096651836>")
 
