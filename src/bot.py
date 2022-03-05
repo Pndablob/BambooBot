@@ -7,13 +7,13 @@ import logging
 import discord
 from discord.ext import commands
 
-token = open("token.txt", "r").read()
+token = open("../token.txt", "r").readline()
 
 bot = commands.Bot(command_prefix=['p!', 'P!'], intents=discord.Intents().all())
 
 # Start time (for `uptime` command)
 startTime = round(time.time())
-print(datetime.utcnow())
+logging.warning(datetime.utcnow())
 
 
 # 2ecc71 Hex code for color embeds
@@ -25,7 +25,7 @@ def signature(embed):
 
 @bot.event
 async def on_connect():
-    logging.info('Bot connected')
+    logging.warning('Bot connected')
 
 
 @bot.event
@@ -43,7 +43,7 @@ async def on_ready():
 
     # When bot is ready, send ready message
     await bot.change_presence(activity=discord.Game('Bamboo Simulator'))
-    logging.info(f'Logged in as {bot.user.name} ({bot.user.id})')
+    logging.warning(f'Logged in as {bot.user.name} ({bot.user.id})')
 
     on_ready_channels = [
         820473911753310208
@@ -59,7 +59,7 @@ async def on_ready():
 
 @bot.event
 async def on_guild_available(guild):
-    logging.info(f'Logged in {guild} ({guild.id})')
+    logging.warning(f'Logged in {guild} ({guild.id})')
 
     # Checks if guild is BB
     if guild.id == 450878205294018560:
@@ -67,7 +67,7 @@ async def on_guild_available(guild):
         for filename in os.listdir('./cogs'):
             if filename.endswith('.py'):
                 bot.load_extension(f'cogs.{filename[:-3]}')  # Cut last 3 char (.py)
-                logging.info(f'loaded {filename}')
+                print(f'loaded {filename}')
 
 
 @bot.command(aliases=['l'])
@@ -79,15 +79,15 @@ async def load(ctx, extension):
         for filename in os.listdir('./cogs'):
             if filename.endswith('.py'):
                 try:
-                    bot.load_extension(f'cogs.{filename[:-3]}')  # Cut last 3 char (.py)
-                    logging.info(f'loaded {filename}')
+                    bot.load_extension(f'src.cogs.{filename[:-3]}')  # Cut last 3 char (.py)
+                    print(f'loaded {filename}')
                 except:
                     pass
         await ctx.send('Loaded all extensions')
         await msg.add_reaction('✅')
     else:
         try:
-            bot.load_extension(f'cogs.{extension}')
+            bot.load_extension(f'src.cogs.{extension}')
             await ctx.send(f'Loaded `{extension}.py`')
             print(f'loaded {extension}.py')
             await msg.add_reaction('✅')

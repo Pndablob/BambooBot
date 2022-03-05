@@ -14,13 +14,10 @@ def signature(embedMessage):
 class timers(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-
         if not self.checkup.is_running():
             self.checkup.start()
-
         if not self.updateDisplay.is_running():
             self.updateDisplay.start()
-
         if not self.updateMemberCount.is_running():
             self.updateMemberCount.start()
 
@@ -75,7 +72,7 @@ class timers(commands.Cog):
         display_channels = [
             876187337174970418,  # BB
         ]
-        logging_channel = self.bot.get_channel(863648426055041054)  # PBT
+        logging_channel = self.bot.get_channel(820473911753310208)  # bot-commands #PBT
 
         for guild_id in guilds:
             guild = self.bot.get_guild(guild_id)

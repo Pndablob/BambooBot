@@ -22,14 +22,14 @@ class seasonalRoles(commands.Cog):
     # Checks when a member has updated their nickname
     @commands.Cog.listener()
     async def on_member_update(self, before, after):
-        role = discord.utils.find(lambda r: r.name == 'Snowy', after.guild.roles)
+        role = discord.utils.find(lambda r: r.name == 'Springy', after.guild.roles)
         logging_channel = self.bot.get_channel(863854481773953055)
 
         if before.display_name != after.display_name:
             try:
-                if after.display_name is None or "❄" not in after.display_name:
+                if after.display_name is None or "🌷" not in after.display_name:
                     await after.remove_roles(role)
-                elif "❄" in after.display_name:
+                elif "🌷" in after.display_name:
                     await after.add_roles(role)
 
                 embed = discord.Embed(title=f'Nickname Updated: ({after.id})', color=0x2ecc71,
@@ -54,9 +54,9 @@ class seasonalRoles(commands.Cog):
         for channel in display_channels:
             try:
                 ch = discord.utils.get(ctx.guild.voice_channels, id=channel)
-                role = discord.utils.find(lambda r: r.name == 'Snowy', ctx.guild.roles)
+                role = discord.utils.find(lambda r: r.name == 'Springy', ctx.guild.roles)
 
-                await ch.edit(name=f'Snowy: {len(role.members)} ❄')
+                await ch.edit(name=f'Springy: {len(role.members)} 🌷')
 
                 embed = discord.Embed(title=f'Display updated manually in guild `{ctx.guild}`', color=0x2ecc71,
                                       description=f'```{ch.name}```', timestamp=datetime.utcnow())
@@ -67,17 +67,17 @@ class seasonalRoles(commands.Cog):
             except AttributeError:
                 pass
 
-    # Gives all users with a ❄ in nickname the Snowy role
+    # Gives all users with a 🌷 in nickname the Springy role
     @commands.command(name='fixrole')
     @commands.is_owner()
     async def fixSeasonalRole(self, ctx):
-        role = discord.utils.get(ctx.guild.roles, id=862837874365300766)  # snowy role
+        role = discord.utils.get(ctx.guild.roles, id=862837874365300766)  # Springy role
         msg = await ctx.send('Fixing seasonal role...')
         i = 0
 
         # Add roles
         for user in ctx.guild.members:
-            if ("❄" in str(user.nick) or "⛄" in str(user.nick)) and role not in user.roles:
+            if "🌷" in str(user.nick) and role not in user.roles:
                 if len(msg.content) > 1950:
                     await user.add_roles(role)
                     msg = await ctx.send(f'\nAdded role to `{user}`')
@@ -92,13 +92,13 @@ class seasonalRoles(commands.Cog):
     @commands.command(name='cleanrole')
     @commands.is_owner()
     async def clearSeasonalRole(self, ctx):
-        role = discord.utils.get(ctx.guild.roles, id=862837874365300766)  # snowy role
+        role = discord.utils.get(ctx.guild.roles, id=862837874365300766)  # Springy role
         msg = await ctx.send('Fixing seasonal role...')
         i = 0
 
         # Add roles
         for user in ctx.guild.members:
-            if ("❄" not in str(user.nick) or "⛄" not in str(user.nick)) and role in user.roles:
+            if "🌷" not in str(user.nick) and role in user.roles:
                 if len(msg.content) > 1950:
                     await user.remove_roles(role)
                     msg = await ctx.send(f'\nRemoved role from `{user}`')
