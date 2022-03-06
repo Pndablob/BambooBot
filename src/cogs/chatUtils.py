@@ -74,7 +74,7 @@ class chatUtils(commands.Cog):
 
         # Show stats, if ceiling and repeats are within a certain limit
         if stats is True and ((int(ceiling) <= 50 and int(repeat) <= 500) or (int(ceiling) <= 100 and int(repeat) <= 250)):
-            for i in range(1, int(ceiling)+1):
+            for i in range(1, int(ceiling) + 1):
                 numcount += f'{i}: {nums.count(i)}\n'
 
             embed.add_field(name='Stats', value=f'```py\n{numcount}```', inline=False)
