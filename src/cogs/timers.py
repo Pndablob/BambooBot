@@ -55,7 +55,7 @@ class timers(commands.Cog):
             ch = discord.utils.get(guild.voice_channels, id=display_channels[index])
             role = discord.utils.get(guild.roles, id=seasonal_role[index])
 
-            await ch.edit(name=f'Snowy: {len(role.members)} ❄')
+            await ch.edit(name=f'{role.name}: {len(role.members)} 🌷')
 
             embed = discord.Embed(title=f'Display updated in `{guild}`', color=0x2ecc71,
                                   description=f'```{ch.name}```', timestamp=datetime.utcnow())
