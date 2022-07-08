@@ -1,10 +1,9 @@
 # Discord bot files
-token.txt
+secrets.txt
 
 # Google files
 client_secrets.json
 creds.json
-secrets.txt
 
 # Pycharm files
 .idea/
