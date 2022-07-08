@@ -34,7 +34,7 @@ class notification(commands.Cog):
 
         self.SCOPES = "https://www.googleapis.com/auth/forms.responses.readonly"
 
-        self.FORM_ID = open("secrets.txt").readlines()[0].rstrip()
+        self.FORM_ID = open("secrets.txt").readlines()[2].rstrip()
 
         self.lastResponse = datetime.utcnow()
 
