@@ -1,4 +1,5 @@
 from datetime import datetime
+from src.bot import signature
 
 import discord
 from discord.ext import commands
@@ -7,12 +8,6 @@ from discord.ext import commands
 def add_author(embedMessage, author):
     # Signs embedded messages with a signature.
     embedMessage.set_footer(text=f'{author.name}#{author.discriminator}', icon_url=author.avatar_url)
-
-
-def signature(embedMessage):
-    # Signs embedded messages with a signature.
-    embedMessage.set_footer(text=f'Bamboo Bot by Pnda#9999',
-                            icon_url='https://cdn.discordapp.com/emojis/851191181315538965.png?v=1')
 
 
 class userUtils(commands.Cog):

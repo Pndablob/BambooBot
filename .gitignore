@@ -1,6 +1,11 @@
 # Discord bot files
 token.txt
 
+# Google files
+client_secrets.json
+creds.json
+secrets.txt
+
 # Pycharm files
 .idea/
 
@@ -133,5 +138,3 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
-/src/in-dev/
-/src/in-dev/
