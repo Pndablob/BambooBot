@@ -42,9 +42,10 @@ class pingfaq(commands.Cog):
             "e",
             f"Hey {message.author.mention}, How Play Game?",
             f"Sometimes I try to ping bots and this happens 😦",
-            f"Nice weather today"
-            f"It's night time somewhere 💤"
-            f""
+            f"Nice weather today",
+            f"It's night time somewhere 💤",
+            f"||pop||||pop||||pop||\n||pop||||pop||||pop||\n||pop||||pop||||pop||",
+            f"😶",
         ]
 
         # Replies a cool message if pinged
@@ -69,15 +70,11 @@ class pingfaq(commands.Cog):
             else:
                 await ctx.send(f"Complaining won't do anything about it <a:rageblob:810669822060134440>")
 
-        # e
+        # ea
         elif message.content.lower() == "e":
             await message.add_reaction('🇪')
         elif message.content.lower() == "a":
             await message.add_reaction('🇦')
-
-        # pnda
-        elif message.content.lower() == "pnda":
-            await message.add_reaction("<:pnda:883106013723623434>")
 
         # boofed
         elif message.content.lower() == "boofed" or message.content.lower() == "boofed!":
