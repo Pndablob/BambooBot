@@ -99,8 +99,8 @@ class notification(commands.Cog):
             await ctx.send(embed=embed)
             c += 1
 
-    # check for new form responses every 60 min
-    @tasks.loop(minutes=2)
+    # check for new form responses every hour
+    @tasks.loop(hours=1)
     async def checkFormResponses(self):
         service = authAPI()
         r = service.forms().responses().list(formId=self.FORM_ID,
@@ -108,14 +108,11 @@ class notification(commands.Cog):
 
         self.lastResponse = datetime.utcnow()
 
+        if r == {}:
+            return
+
         guild = self.bot.get_guild(983840745763004536)  # SOS
         notif_channel = self.bot.get_channel(820473911753310208)
-
-        if r == {}:
-            print("no new responses")
-            print(self.lastResponse)
-            await notif_channel.send(f"{self.lastResponse}\nno new responses")
-            return
 
         topicRoles = [
             984915844511440956,  # python
