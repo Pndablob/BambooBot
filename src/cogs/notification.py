@@ -112,7 +112,7 @@ class notification(commands.Cog):
             return
 
         guild = self.bot.get_guild(983840745763004536)  # SOS
-        notif_channel = self.bot.get_channel(820473911753310208)
+        notif_channel = self.bot.get_channel(983841380512169994)
 
         topicRoles = [
             984915844511440956,  # python
