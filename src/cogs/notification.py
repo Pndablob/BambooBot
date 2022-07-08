@@ -9,7 +9,7 @@ from datetime import datetime, timedelta
 
 def authAPI():
     DISCOVERY_DOC = "https://forms.googleapis.com/$discovery/rest?version=v1"
-    with open("creds.json") as f:
+    with open("../creds.json") as f:
         creds = json.load(f)
     oauth = client.OAuth2Credentials(
         access_token=None,
@@ -34,7 +34,7 @@ class notification(commands.Cog):
 
         self.SCOPES = "https://www.googleapis.com/auth/forms.responses.readonly"
 
-        self.FORM_ID = open("secrets.txt").readlines()[2].rstrip()
+        self.FORM_ID = open("../secrets.txt").readline().rstrip()
 
         self.lastResponse = datetime.utcnow()
 
@@ -62,9 +62,9 @@ class notification(commands.Cog):
     @commands.command()
     @commands.is_owner()
     async def reauth(self, ctx):
-        storage = file.Storage("creds.json")
+        storage = file.Storage("../creds.json")
         try:
-            flow = client.flow_from_clientsecrets("client_secrets.json", self.SCOPES)
+            flow = client.flow_from_clientsecrets("../client_secrets.json", self.SCOPES)
             tools.run_flow(flow, storage)
             await ctx.send("OAuth Successful")
         except:
