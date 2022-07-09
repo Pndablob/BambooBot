@@ -84,7 +84,8 @@ class notification(commands.Cog):
         r = service.forms().responses().list(formId=self.FORM_ID,
                                              filter=f"timestamp >= {(datetime.utcnow() - timedelta(minutes=m, hours=h, days=d)).isoformat('T')}Z").execute()
         if r == {}:
-            await ctx.send(f"No new responses since <t:{round((datetime.now()-timedelta(minutes=m, hours=h, days=d)).timestamp())}:R>")
+            await ctx.send(
+                f"No new responses since <t:{round((datetime.now() - timedelta(minutes=m, hours=h, days=d)).timestamp())}:R>")
             return
 
         c = 1
@@ -122,7 +123,7 @@ class notification(commands.Cog):
             return
 
         guild = self.bot.get_guild(983840745763004536)  # SOS
-        notif_channel = self.bot.get_channel(994093545646456873)
+        notif_channel = self.bot.get_channel(983841380512169994)  # student-registrations
 
         topicRoles = [
             984915844511440956,  # python
@@ -159,7 +160,6 @@ class notification(commands.Cog):
             else:
                 for r in topicRoles:
                     msg += guild.get_role(r).mention
-                    pass
 
             embed = discord.Embed(title=f"New Response {c}", timestamp=datetime.utcnow(), color=color,
                                   # RFC-3339 Z from API -> timestamp -> unix with timezone adjustment
