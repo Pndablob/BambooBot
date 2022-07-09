@@ -79,7 +79,7 @@ class notification(commands.Cog):
     # get and print past responses
     @commands.command(aliases=["getr", "getR"])
     @commands.is_owner()
-    async def getResponses(self, ctx, m: int = 0, h: int = 1, d: int = 0):
+    async def getResponses(self, ctx, d: int = 0, h: int = 1, m: int = 0):
         service = authAPI()
         r = service.forms().responses().list(formId=self.FORM_ID,
                                              filter=f"timestamp >= {(datetime.utcnow() - timedelta(minutes=m, hours=h, days=d)).isoformat('T')}Z").execute()
@@ -98,7 +98,7 @@ class notification(commands.Cog):
                 try:
                     ans = response['answers'][ID]['textAnswers']['answers'][0]['value']
                     embed.add_field(name=f"Question {a}", value=ans)
-                except:
+                except KeyError:
                     embed.add_field(name=f"Question {a}", value="No Response")
                 a += 1
 
@@ -167,7 +167,7 @@ class notification(commands.Cog):
                 try:
                     ans = response['answers'][self.questionIDList[q[i]]]['textAnswers']['answers'][0]['value']
                     embed.add_field(name=f"{responseHeader[i]}", value=ans)
-                except:
+                except KeyError:
                     embed.add_field(name=f"{responseHeader[i]}", value="No Response")
             c += 1
 
