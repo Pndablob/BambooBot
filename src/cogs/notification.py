@@ -9,7 +9,7 @@ from datetime import datetime, timedelta
 
 def authAPI():
     DISCOVERY_DOC = "https://forms.googleapis.com/$discovery/rest?version=v1"
-    with open("../creds.json") as f:
+    with open("../secrets/creds.json") as f:
         creds = json.load(f)
     oauth = client.OAuth2Credentials(
         access_token=None,
@@ -39,7 +39,7 @@ class notification(commands.Cog):
         with open("../secrets/lastChecked.txt", 'r+t') as f:
             rtime = f.readline().rstrip()
             if rtime == "":
-                self.lastChecked = datetime.utcnow()
+                self.lastChecked = datetime.now()
                 f.write(str(self.lastChecked))
             else:
                 self.lastChecked = datetime.fromisoformat(rtime)
@@ -68,9 +68,9 @@ class notification(commands.Cog):
     @commands.command()
     @commands.is_owner()
     async def reauth(self, ctx):
-        storage = file.Storage("../creds.json")
+        storage = file.Storage("../secrets/creds.json")
         try:
-            flow = client.flow_from_clientsecrets("../client_secrets.json", self.SCOPES)
+            flow = client.flow_from_clientsecrets("../secrets/client_secrets.json", self.SCOPES)
             tools.run_flow(flow, storage)
             await ctx.send("OAuth Successful")
         except:
@@ -113,10 +113,10 @@ class notification(commands.Cog):
                                              filter=f"timestamp >= {self.lastChecked.isoformat('T')}Z").execute()
 
         # rewrite file with updated lastChecked time
-        with open("../lastChecked.txt", 'wt') as f:
+        with open("../secrets/lastChecked.txt", 'wt') as f:
             f.truncate()
             f.seek(0)
-            f.write(str(datetime.utcnow()))
+            f.write(str(datetime.now()))
 
         if r == {}:
             return
