@@ -34,9 +34,15 @@ class notification(commands.Cog):
 
         self.SCOPES = "https://www.googleapis.com/auth/forms.responses.readonly"
 
-        self.FORM_ID = open("../secrets.txt").readline().rstrip()
+        self.FORM_ID = open("../secrets/secrets.txt").readline().rstrip()
 
-        self.lastResponse = datetime.utcnow()
+        with open("../secrets/lastChecked.txt", 'r+t') as f:
+            rtime = f.readline().rstrip()
+            if rtime == "":
+                self.lastChecked = datetime.utcnow()
+                f.write(str(self.lastChecked))
+            else:
+                self.lastChecked = datetime.fromisoformat(rtime)
 
         self.questionIDList = [
             "2d60e98a",  # 1
@@ -104,9 +110,13 @@ class notification(commands.Cog):
     async def checkFormResponses(self):
         service = authAPI()
         r = service.forms().responses().list(formId=self.FORM_ID,
-                                             filter=f"timestamp >= {self.lastResponse.isoformat('T')}Z").execute()
+                                             filter=f"timestamp >= {self.lastChecked.isoformat('T')}Z").execute()
 
-        self.lastResponse = datetime.utcnow()
+        # rewrite file with updated lastChecked time
+        with open("../lastChecked.txt", 'wt') as f:
+            f.truncate()
+            f.seek(0)
+            f.write(str(datetime.utcnow()))
 
         if r == {}:
             return

@@ -153,7 +153,7 @@ def main():
 
 if __name__ == '__main__':
     # init
-    token = open("../token.txt", "r").readline().rstrip()
+    token = open("../secrets/token.txt").readline().rstrip()
 
     bot = commands.Bot(command_prefix=['p!', 'P!'], intents=discord.Intents().all())
 
