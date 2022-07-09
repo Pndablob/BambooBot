@@ -97,9 +97,9 @@ class notification(commands.Cog):
             for ID in self.questionIDList:
                 try:
                     ans = response['answers'][ID]['textAnswers']['answers'][0]['value']
-                    embed.add_field(name=f"Question {a}", value=ans)
+                    embed.add_field(name=f"Question {a}", value=ans, inline=True)
                 except KeyError:
-                    embed.add_field(name=f"Question {a}", value="No Response")
+                    embed.add_field(name=f"Question {a}", value="No Response", inline=True)
                 a += 1
 
             await ctx.send(embed=embed)
@@ -122,7 +122,7 @@ class notification(commands.Cog):
             return
 
         guild = self.bot.get_guild(983840745763004536)  # SOS
-        notif_channel = self.bot.get_channel(983841380512169994)
+        notif_channel = self.bot.get_channel(994093545646456873)
 
         topicRoles = [
             984915844511440956,  # python
@@ -136,9 +136,10 @@ class notification(commands.Cog):
             "Topic",  # 9
             "Availability",  # 10
             "Skills and Experience",  # 11
+            "Requested Tutor",  # 12
         ]
 
-        q = [0, 2, 8, 9, 10]
+        q = [0, 2, 8, 9, 10, 11]
 
         # r['responses']['answers'][{questionId}]['textAnswers']['answers'][0]['value']
         c = 1
@@ -166,9 +167,9 @@ class notification(commands.Cog):
             for i in range(len(q)):
                 try:
                     ans = response['answers'][self.questionIDList[q[i]]]['textAnswers']['answers'][0]['value']
-                    embed.add_field(name=f"{responseHeader[i]}", value=ans)
+                    embed.add_field(name=f"{responseHeader[i]}", value=ans, inline=True)
                 except KeyError:
-                    embed.add_field(name=f"{responseHeader[i]}", value="No Response")
+                    embed.add_field(name=f"{responseHeader[i]}", value="No Response", inline=True)
             c += 1
 
             await notif_channel.send(f"{msg}", embed=embed)
