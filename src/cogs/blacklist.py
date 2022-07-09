@@ -13,8 +13,7 @@ def load_json(filename):
 class blacklist(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        global blacklisted_words
-        blacklisted_words = [
+        self.blacklisted_words = [
             "bitch", "dick", "cock", "pussy", "fag", "slut", "douche", "cunt", "porn", "nigger", "faggot", "niggar",
             "retarded", "horny", "jizz", "asshole", "cuck", "retard", "dicks", "cocks", "vagina", "boob", "pussies",
             "cunts", "titty", "tittie", "ejaculate", "faggots", "nazi", "nazis", "nigga", "niggas", "niggers", "sex",
@@ -56,15 +55,15 @@ class blacklist(commands.Cog):
         msg = message.content.lower()
 
         # Checks messages for blacklisted words
-        for i in range(len(blacklisted_words)):
-            if f' {blacklisted_words[i]} ' in msg or f' {blacklisted_words[i]}' in msg or f'{blacklisted_words[i]} ' in msg or msg.startswith(
-                    f'{blacklisted_words[i]}') or msg.endswith(f'{blacklisted_words[i]}'):
+        for i in range(len(self.blacklisted_words)):
+            if f' {self.blacklisted_words[i]} ' in msg or f' {self.blacklisted_words[i]}' in msg or f'{self.blacklisted_words[i]} ' in msg or msg.startswith(
+                    f'{self.blacklisted_words[i]}') or msg.endswith(f'{self.blacklisted_words[i]}'):
                 await message.delete()
 
                 embed = discord.Embed(title='Bad Word!', color=0xff0000, timestamp=datetime.utcnow(),
-                                      description=f'Your message containing `{blacklisted_words[i]}` was removed')
+                                      description=f'Your message containing `{self.blacklisted_words[i]}` was removed')
                 await message.author.send(embed=embed)
-                print(f'deleting [{blacklisted_words[i]}]')
+                print(f'deleting [{self.blacklisted_words[i]}]')
                 break
 
 

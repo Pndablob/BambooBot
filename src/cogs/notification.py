@@ -9,7 +9,7 @@ from datetime import datetime, timedelta
 
 def authAPI():
     DISCOVERY_DOC = "https://forms.googleapis.com/$discovery/rest?version=v1"
-    with open("creds.json") as f:
+    with open("../secrets/creds.json") as f:
         creds = json.load(f)
     oauth = client.OAuth2Credentials(
         access_token=None,
@@ -34,9 +34,15 @@ class notification(commands.Cog):
 
         self.SCOPES = "https://www.googleapis.com/auth/forms.responses.readonly"
 
-        self.FORM_ID = open("secrets.txt").readlines()[0].rstrip()
+        self.FORM_ID = open("../secrets/secrets.txt").readline().rstrip()
 
-        self.lastResponse = datetime.utcnow()
+        with open("../secrets/lastChecked.txt", 'r+t') as f:
+            rtime = f.readline().rstrip()
+            if rtime == "":
+                self.lastChecked = datetime.utcnow()
+                f.write(str(self.lastChecked))
+            else:
+                self.lastChecked = datetime.fromisoformat(rtime)
 
         self.questionIDList = [
             "2d60e98a",  # 1
@@ -62,9 +68,9 @@ class notification(commands.Cog):
     @commands.command()
     @commands.is_owner()
     async def reauth(self, ctx):
-        storage = file.Storage("creds.json")
+        storage = file.Storage("../secrets/creds.json")
         try:
-            flow = client.flow_from_clientsecrets("client_secrets.json", self.SCOPES)
+            flow = client.flow_from_clientsecrets("../secrets/client_secrets.json", self.SCOPES)
             tools.run_flow(flow, storage)
             await ctx.send("OAuth Successful")
         except:
@@ -73,12 +79,13 @@ class notification(commands.Cog):
     # get and print past responses
     @commands.command(aliases=["getr", "getR"])
     @commands.is_owner()
-    async def getResponses(self, ctx, m: int = 0, h: int = 1, d: int = 0):
+    async def getResponses(self, ctx, d: int = 0, h: int = 1, m: int = 0):
         service = authAPI()
         r = service.forms().responses().list(formId=self.FORM_ID,
                                              filter=f"timestamp >= {(datetime.utcnow() - timedelta(minutes=m, hours=h, days=d)).isoformat('T')}Z").execute()
         if r == {}:
-            await ctx.send(f"No new responses since <t:{round((datetime.now()-timedelta(minutes=m, hours=h, days=d)).timestamp())}:R>")
+            await ctx.send(
+                f"No new responses since <t:{round((datetime.now() - timedelta(minutes=m, hours=h, days=d)).timestamp())}:R>")
             return
 
         c = 1
@@ -91,9 +98,9 @@ class notification(commands.Cog):
             for ID in self.questionIDList:
                 try:
                     ans = response['answers'][ID]['textAnswers']['answers'][0]['value']
-                    embed.add_field(name=f"Question {a}", value=ans)
-                except:
-                    embed.add_field(name=f"Question {a}", value="No Response")
+                    embed.add_field(name=f"Question {a}", value=ans, inline=True)
+                except KeyError:
+                    embed.add_field(name=f"Question {a}", value="No Response", inline=True)
                 a += 1
 
             await ctx.send(embed=embed)
@@ -104,15 +111,19 @@ class notification(commands.Cog):
     async def checkFormResponses(self):
         service = authAPI()
         r = service.forms().responses().list(formId=self.FORM_ID,
-                                             filter=f"timestamp >= {self.lastResponse.isoformat('T')}Z").execute()
+                                             filter=f"timestamp >= {self.lastChecked.isoformat('T')}Z").execute()
 
-        self.lastResponse = datetime.utcnow()
+        # rewrite file with updated lastChecked time
+        with open("../secrets/lastChecked.txt", 'wt') as f:
+            f.truncate()
+            f.seek(0)
+            f.write(str(datetime.utcnow()))
 
         if r == {}:
             return
 
         guild = self.bot.get_guild(983840745763004536)  # SOS
-        notif_channel = self.bot.get_channel(983841380512169994)
+        notif_channel = self.bot.get_channel(983841380512169994)  # student-registrations
 
         topicRoles = [
             984915844511440956,  # python
@@ -126,15 +137,16 @@ class notification(commands.Cog):
             "Topic",  # 9
             "Availability",  # 10
             "Skills and Experience",  # 11
+            "Requested Tutor",  # 12
         ]
 
-        q = [0, 2, 8, 9, 10]
+        q = [0, 2, 8, 9, 10, 11]
 
         # r['responses']['answers'][{questionId}]['textAnswers']['answers'][0]['value']
         c = 1
-        msg = ""
-        color = 0x2ecc71
         for response in r['responses']:
+            msg = ""
+            color = 0x2ecc71
             topic = response['answers'][self.questionIDList[8]]['textAnswers']['answers'][0]['value']
             if topic.startswith("Python"):
                 msg = guild.get_role(topicRoles[0]).mention
@@ -148,7 +160,6 @@ class notification(commands.Cog):
             else:
                 for r in topicRoles:
                     msg += guild.get_role(r).mention
-                    pass
 
             embed = discord.Embed(title=f"New Response {c}", timestamp=datetime.utcnow(), color=color,
                                   # RFC-3339 Z from API -> timestamp -> unix with timezone adjustment
@@ -156,9 +167,9 @@ class notification(commands.Cog):
             for i in range(len(q)):
                 try:
                     ans = response['answers'][self.questionIDList[q[i]]]['textAnswers']['answers'][0]['value']
-                    embed.add_field(name=f"{responseHeader[i]}", value=ans)
-                except:
-                    embed.add_field(name=f"{responseHeader[i]}", value="No Response")
+                    embed.add_field(name=f"{responseHeader[i]}", value=ans, inline=True)
+                except KeyError:
+                    embed.add_field(name=f"{responseHeader[i]}", value="No Response", inline=True)
             c += 1
 
             await notif_channel.send(f"{msg}", embed=embed)
