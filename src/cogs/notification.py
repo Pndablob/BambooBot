@@ -39,7 +39,7 @@ class notification(commands.Cog):
         with open("../secrets/lastChecked.txt", 'r+t') as f:
             rtime = f.readline().rstrip()
             if rtime == "":
-                self.lastChecked = datetime.now()
+                self.lastChecked = datetime.utcnow()
                 f.write(str(self.lastChecked))
             else:
                 self.lastChecked = datetime.fromisoformat(rtime)
@@ -116,7 +116,7 @@ class notification(commands.Cog):
         with open("../secrets/lastChecked.txt", 'wt') as f:
             f.truncate()
             f.seek(0)
-            f.write(str(datetime.now()))
+            f.write(str(datetime.utcnow()))
 
         if r == {}:
             return
@@ -142,9 +142,9 @@ class notification(commands.Cog):
 
         # r['responses']['answers'][{questionId}]['textAnswers']['answers'][0]['value']
         c = 1
-        msg = ""
-        color = 0x2ecc71
         for response in r['responses']:
+            msg = ""
+            color = 0x2ecc71
             topic = response['answers'][self.questionIDList[8]]['textAnswers']['answers'][0]['value']
             if topic.startswith("Python"):
                 msg = guild.get_role(topicRoles[0]).mention
