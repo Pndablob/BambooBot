@@ -69,12 +69,14 @@ class notification(commands.Cog):
     @commands.is_owner()
     async def reauth(self, ctx):
         storage = file.Storage("../secrets/creds.json")
-        try:
-            flow = client.flow_from_clientsecrets("../secrets/client_secrets.json", self.SCOPES)
-            tools.run_flow(flow, storage)
-            await ctx.send("OAuth Successful")
-        except:
-            await ctx.send("Authentication failed")
+        creds = storage.get()
+        if creds is None or creds.invalid:
+            try:
+                flow = client.flow_from_clientsecrets("../secrets/client_secrets.json", self.SCOPES)
+                tools.run_flow(flow, storage)
+                await ctx.send("OAuth Successful")
+            except:
+                await ctx.send("Authentication failed")
 
     # get and print past responses
     @commands.command(aliases=["getr", "getR"])
@@ -84,8 +86,7 @@ class notification(commands.Cog):
         r = service.forms().responses().list(formId=self.FORM_ID,
                                              filter=f"timestamp >= {(datetime.utcnow() - timedelta(minutes=m, hours=h, days=d)).isoformat('T')}Z").execute()
         if r == {}:
-            await ctx.send(
-                f"No new responses since <t:{round((datetime.now() - timedelta(minutes=m, hours=h, days=d)).timestamp())}:R>")
+            await ctx.send(f"No new responses since <t:{round((datetime.now() - timedelta(minutes=m, hours=h, days=d)).timestamp())}:R>")
             return
 
         c = 1
@@ -103,21 +104,25 @@ class notification(commands.Cog):
                     embed.add_field(name=f"Question {a}", value="No Response", inline=True)
                 a += 1
 
-            await ctx.send(embed=embed)
+            await ctx.send(f"Responses from <t:{round((datetime.now() - timedelta(minutes=m, hours=h, days=d)).timestamp())}:R> ", embed=embed)
+            await ctx.send(r)
             c += 1
 
     # check for new form responses every hour
     @tasks.loop(hours=1)
     async def checkFormResponses(self):
         service = authAPI()
-        r = service.forms().responses().list(formId=self.FORM_ID,
-                                             filter=f"timestamp >= {self.lastChecked.isoformat('T')}Z").execute()
 
         # rewrite file with updated lastChecked time
-        with open("../secrets/lastChecked.txt", 'wt') as f:
+        with open("../secrets/lastChecked.txt", 'r+t') as f:
+            self.lastChecked = f.readline().rstrip()
             f.truncate()
             f.seek(0)
-            f.write(str(datetime.utcnow()))
+            f.write(f"{datetime.utcnow()}")
+
+        r = service.forms().responses().list(formId=self.FORM_ID,
+                                             # str object -> datetime object
+                                             filter=f"timestamp >= {datetime.strptime(self.lastChecked, '%Y-%m-%d %H:%M:%S.%f').isoformat('T')}Z").execute()
 
         if r == {}:
             return
@@ -143,7 +148,6 @@ class notification(commands.Cog):
         q = [0, 2, 8, 9, 10, 11]
 
         # r['responses']['answers'][{questionId}]['textAnswers']['answers'][0]['value']
-        c = 1
         for response in r['responses']:
             msg = ""
             color = 0x2ecc71
@@ -161,7 +165,7 @@ class notification(commands.Cog):
                 for r in topicRoles:
                     msg += guild.get_role(r).mention
 
-            embed = discord.Embed(title=f"New Response {c}", timestamp=datetime.utcnow(), color=color,
+            embed = discord.Embed(title=f"New Student Registration", timestamp=datetime.utcnow(), color=color,
                                   # RFC-3339 Z from API -> timestamp -> unix with timezone adjustment
                                   description=f"Form submitted at <t:{round((datetime.strptime(response['createTime'][:-1], '%Y-%m-%dT%H:%M:%S.%f') - timedelta(hours=4)).timestamp())}:f>")
             for i in range(len(q)):
@@ -170,7 +174,6 @@ class notification(commands.Cog):
                     embed.add_field(name=f"{responseHeader[i]}", value=ans, inline=True)
                 except KeyError:
                     embed.add_field(name=f"{responseHeader[i]}", value="No Response", inline=True)
-            c += 1
 
             await notif_channel.send(f"{msg}", embed=embed)
 

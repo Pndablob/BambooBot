@@ -34,6 +34,7 @@ class colorRoles(commands.Cog):
         798764137936977952,  # New Biscuit (Level 10)
         # Guild: TZT
         845089203788578857,  # nerd
+        891424837719978034,  # people
     )
     @commands.command()
     async def color(self, ctx, *, color=None):
