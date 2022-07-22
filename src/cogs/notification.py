@@ -70,10 +70,10 @@ class notification(commands.Cog):
 
     @commands.command()
     @commands.is_owner()
-    async def reauth(self, ctx):
+    async def reauth(self, ctx, forceReauth):
         storage = file.Storage("../secrets/creds.json")
         creds = storage.get()
-        if creds is None or creds.invalid:
+        if creds is None or forceReauth:
             try:
                 flow = client.flow_from_clientsecrets("../secrets/client_secrets.json", self.SCOPES)
                 tools.run_flow(flow, storage)
@@ -87,9 +87,7 @@ class notification(commands.Cog):
     async def getResponses(self, ctx, d: int = 0, h: int = 1, m: int = 0):
         service = getAuth()
         try:
-            r = service.forms().responses().list(formId=self.FORM_ID,
-                                                 # str object -> datetime object
-                                                 filter=f"timestamp >= {datetime.strptime(self.lastChecked, '%Y-%m-%d %H:%M:%S.%f').isoformat('T')}Z").execute()
+            r = service.forms().responses().list(formId=self.FORM_ID, filter=f"timestamp >= {(datetime.utcnow() - timedelta(minutes=m, hours=h, days=d)).isoformat('T')}Z").execute()
         except oauth2client.client.HttpAccessTokenRefreshError:
             await self.logch.send(f"<@317751950441447435> Token has been expired or revoked>")
             return
@@ -117,7 +115,6 @@ class notification(commands.Cog):
             await ctx.send(
                 f"Responses from <t:{round((datetime.now() - timedelta(minutes=m, hours=h, days=d)).timestamp())}:R> ",
                 embed=embed)
-            await ctx.send(r)
             c += 1
 
     # check for new form responses every hour
