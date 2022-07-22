@@ -1,4 +1,5 @@
 import discord
+import oauth2client.client
 from discord.ext import commands, tasks
 
 from apiclient import discovery
@@ -7,7 +8,7 @@ import json
 from datetime import datetime, timedelta
 
 
-def authAPI():
+def getAuth():
     DISCOVERY_DOC = "https://forms.googleapis.com/$discovery/rest?version=v1"
     with open("../secrets/creds.json") as f:
         creds = json.load(f)
@@ -31,6 +32,8 @@ class notification(commands.Cog):
 
         if not self.checkFormResponses.is_running():
             self.checkFormResponses.start()
+
+        self.logch = self.bot.get_channel(820473911753310208)  # bot-commands
 
         self.SCOPES = "https://www.googleapis.com/auth/forms.responses.readonly"
 
@@ -82,11 +85,18 @@ class notification(commands.Cog):
     @commands.command(aliases=["getr", "getR"])
     @commands.is_owner()
     async def getResponses(self, ctx, d: int = 0, h: int = 1, m: int = 0):
-        service = authAPI()
-        r = service.forms().responses().list(formId=self.FORM_ID,
-                                             filter=f"timestamp >= {(datetime.utcnow() - timedelta(minutes=m, hours=h, days=d)).isoformat('T')}Z").execute()
+        service = getAuth()
+        try:
+            r = service.forms().responses().list(formId=self.FORM_ID,
+                                                 # str object -> datetime object
+                                                 filter=f"timestamp >= {datetime.strptime(self.lastChecked, '%Y-%m-%d %H:%M:%S.%f').isoformat('T')}Z").execute()
+        except oauth2client.client.HttpAccessTokenRefreshError:
+            await self.logch.send(f"<@317751950441447435> Token has been expired or revoked>")
+            return
+        
         if r == {}:
-            await ctx.send(f"No new responses since <t:{round((datetime.now() - timedelta(minutes=m, hours=h, days=d)).timestamp())}:R>")
+            await ctx.send(
+                f"No new responses since <t:{round((datetime.now() - timedelta(minutes=m, hours=h, days=d)).timestamp())}:R>")
             return
 
         c = 1
@@ -104,14 +114,16 @@ class notification(commands.Cog):
                     embed.add_field(name=f"Question {a}", value="No Response", inline=True)
                 a += 1
 
-            await ctx.send(f"Responses from <t:{round((datetime.now() - timedelta(minutes=m, hours=h, days=d)).timestamp())}:R> ", embed=embed)
+            await ctx.send(
+                f"Responses from <t:{round((datetime.now() - timedelta(minutes=m, hours=h, days=d)).timestamp())}:R> ",
+                embed=embed)
             await ctx.send(r)
             c += 1
 
     # check for new form responses every hour
     @tasks.loop(hours=1)
     async def checkFormResponses(self):
-        service = authAPI()
+        service = getAuth()
 
         # rewrite file with updated lastChecked time
         with open("../secrets/lastChecked.txt", 'r+t') as f:
@@ -120,9 +132,13 @@ class notification(commands.Cog):
             f.seek(0)
             f.write(f"{datetime.utcnow()}")
 
-        r = service.forms().responses().list(formId=self.FORM_ID,
-                                             # str object -> datetime object
-                                             filter=f"timestamp >= {datetime.strptime(self.lastChecked, '%Y-%m-%d %H:%M:%S.%f').isoformat('T')}Z").execute()
+        try:
+            r = service.forms().responses().list(formId=self.FORM_ID,
+                                                 # str object -> datetime object
+                                                 filter=f"timestamp >= {datetime.strptime(self.lastChecked, '%Y-%m-%d %H:%M:%S.%f').isoformat('T')}Z").execute()
+        except oauth2client.client.HttpAccessTokenRefreshError:
+            await self.logch.send(f"<@317751950441447435> Token has been expired or revoked>")
+            return
 
         if r == {}:
             return

@@ -165,4 +165,4 @@ if __name__ == '__main__':
     main()
 
     # run bot
-    bot.run(token)
+    bot.run(token=token, reconnect=True)
