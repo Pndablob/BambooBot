@@ -126,11 +126,8 @@ class notification(commands.Cog):
         service = getAuth()
 
         # rewrite file with updated lastChecked time
-        with open("../secrets/lastChecked.txt", 'r+t') as f:
+        with open("../secrets/lastChecked.txt", 'rt') as f:
             self.lastChecked = f.readline().rstrip()
-            f.truncate()
-            f.seek(0)
-            f.write(f"{datetime.utcnow()}")
 
         try:
             r = service.forms().responses().list(formId=self.FORM_ID,
@@ -139,6 +136,11 @@ class notification(commands.Cog):
         except oauth2client.client.HttpAccessTokenRefreshError:
             await self.logch.send(f"<@317751950441447435> Token has been expired or revoked>")
             return
+
+        with open("../secrets/lastChecked.txt", "wt") as f:
+            f.truncate()
+            f.seek(0)
+            f.write(f"{datetime.utcnow()}")
 
         if r == {}:
             return
