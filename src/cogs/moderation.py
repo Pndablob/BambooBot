@@ -19,8 +19,7 @@ class moderation(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-        global logging_ch
-        logging_ch = self.bot.get_channel(879570002599084072)
+        self.logging_ch = self.bot.get_channel(879570002599084072)
 
     # Perm-Mute command
     @commands.command(name='permmute', aliases=['pmute'])
@@ -45,7 +44,7 @@ class moderation(commands.Cog):
         muteEmbed = discord.Embed(description=f"**Reason:** {reason}", color=0xff0000, timestamp=datetime.utcnow())
         muteEmbed.set_author(name=f"{member} was muted for {duration}", icon_url=member.avatar_url)
 
-        log = await logging_ch.send(embed=muteEmbed)
+        log = await self.logging_ch.send(embed=muteEmbed)
 
         memberDM = discord.Embed(description=f"You were muted in {ctx.guild} for {duration}", color=0x2ecc71, timestamp=datetime.utcnow())
         memberDM.add_field(name="Reason", value=f"{reason}")
@@ -57,7 +56,7 @@ class moderation(commands.Cog):
         unmuteEmbed = discord.Embed(description=f"**Reason:** {reason}", color=0x2ecc71)
         unmuteEmbed.add_field(name="Punishment Log Message", value=f"[Jump to punishment log message]({log.jump_url})")
         unmuteEmbed.set_author(name=f"{member} was unmuted", icon_url=member.avatar_url)
-        await logging_ch.send(embed=unmuteEmbed)
+        await self.logging_ch.send(embed=unmuteEmbed)
 
     # Unmute command
     @commands.command(name='unmute')
@@ -90,7 +89,7 @@ class moderation(commands.Cog):
         muteEmbed = discord.Embed(description=f"**Reason:** {reason}", color=0xff0000, timestamp=datetime.utcnow())
         muteEmbed.set_author(name=f"{member} was permanently banned", icon_url=member.avatar_url)
 
-        log = await logging_ch.send(embed=muteEmbed)
+        log = await self.logging_ch.send(embed=muteEmbed)
 
         memberDM = discord.Embed(description=f"You were permanently banned in {ctx.guild}", color=0x2ecc71, timestamp=datetime.utcnow())
         memberDM.add_field(name="Reason", value=f"{reason}")

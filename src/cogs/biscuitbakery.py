@@ -1,6 +1,8 @@
 from discord.ext import commands
 import discord
 
+from src.utils.enums import *
+
 
 class biscuitbakery(commands.Cog):
     def __init__(self, bot):
@@ -10,7 +12,7 @@ class biscuitbakery(commands.Cog):
     @commands.command(name="verifyall")
     @commands.is_owner()
     async def verifyAlll(self, ctx):
-        guild = self.bot.get_guild(450878205294018560)  # BB
+        guild = self.bot.get_guild(Server.BB)  # BB
         role = guild.get_role(role_id=472841496639307776)  # 'Biscuit' role
         msg = await ctx.send('Manually verifying all users...')
         i = 0
@@ -30,8 +32,8 @@ class biscuitbakery(commands.Cog):
     @commands.command()
     @commands.has_permissions(manage_messages=True)
     async def verify(self, ctx, user: discord.Member):
-        if ctx.guild == 450878205294018560 or ctx.guild == 815952235296063549:
-            guild = self.bot.get_guild(450878205294018560)
+        if ctx.guild == Server.BB or ctx.guild == Server.PBT:
+            guild = self.bot.get_guild(Server.BB)
         else:
             # if not BB
             return

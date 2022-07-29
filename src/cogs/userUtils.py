@@ -1,8 +1,9 @@
-from datetime import datetime
-from src.bot import signature
-
 import discord
 from discord.ext import commands
+
+from datetime import datetime
+from src.bot import signature
+from src.utils.enums import *
 
 
 def add_author(embedMessage, author):
@@ -20,7 +21,7 @@ class userUtils(commands.Cog):
     async def echo(self, ctx, *, msg):
         await ctx.message.delete()
 
-        ch = self.bot.get_channel(850159250629722123)
+        ch = self.bot.get_channel(PBT.DM_LOG)
         embed = discord.Embed(title='Echo 📣', description=f'Echoed message by {ctx.message.author.mention}\n',
                               color=0x2ecc71, timestamp=datetime.utcnow())
         embed.add_field(name='Message:', value=f'```{msg}```', inline=False)
@@ -36,7 +37,7 @@ class userUtils(commands.Cog):
         await ctx.message.delete()
         await user.send(msg)
 
-        ch = self.bot.get_channel(850159250629722123)
+        ch = self.bot.get_channel(PBT.DM_LOG)
         embed = discord.Embed(title='Boop! ❗', description=f'{user.mention} was poked', color=0x2ecc71,
                               timestamp=datetime.utcnow())
         embed.add_field(name='Message:', value=f'```{msg}```', inline=False)
@@ -51,7 +52,7 @@ class userUtils(commands.Cog):
             # not a DM, or it's just the bot itself
             return
 
-        channel = self.bot.get_channel(864003007389630535)
+        channel = self.bot.get_channel(PBT.DM_LOG)
         author = message.author
         content = message.clean_content
 

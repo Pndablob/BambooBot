@@ -70,7 +70,7 @@ class notification(commands.Cog):
 
     @commands.command()
     @commands.is_owner()
-    async def reauth(self, ctx, forceReauth):
+    async def reauth(self, ctx, forceReauth=False):
         storage = file.Storage("../secrets/creds.json")
         creds = storage.get()
         if creds is None or forceReauth:

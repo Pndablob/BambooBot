@@ -3,6 +3,7 @@ from discord.ext import commands, tasks
 
 from datetime import datetime
 from src.bot import signature
+from src.utils.enums import *
 
 
 def add_author(embedMessage, author):
@@ -18,31 +19,33 @@ class seasonalRoles(commands.Cog):
 
         self.emoji = "🌞"
         self.roleName = "Sandy"
-        self.BB = bot.get_guild(450878205294018560)  # BB
+        self.BB = bot.get_guild(BB.ID)  # BB
+
+        self.guilds = [
+            PBT.ID,
+            BB.ID,
+        ]
+        self.display_channels = [
+            PBT.SEASONAL_ROLE_DISPLAY,
+            BB.SEASONAL_ROLE_DISPLAY,
+        ]
+        self.seasonal_role = [
+            PBT.SEASONAL_ROLE,
+            BB.SEASONAL_ROLE,
+        ]
             
     # Updates the seasonal-role display count every hour
     @tasks.loop(minutes=60)
     async def updateDisplay(self):
-        guilds = [
-            815952235296063549,  # PBT
-            450878205294018560,  # BB
-        ]
-        display_channels = [
-            862526927440707614,  # PBT
-            863851458583592991,  # BB
-        ]
-        seasonal_role = [
-            862520211142869053,  # PBT
-            862837874365300766,  # BB
-        ]
-        logging_channel = self.bot.get_channel(863854481773953055)
 
-        for guild_id in guilds:
+        logging_channel = self.bot.get_channel(PBT.SEASONAL_ROLE_LOG)
+
+        for guild_id in self.guilds:
             guild = self.bot.get_guild(guild_id)
-            index = guilds.index(guild_id)
+            index = self.guilds.index(guild_id)
 
-            ch = discord.utils.get(guild.voice_channels, id=display_channels[index])
-            role = discord.utils.get(guild.roles, id=seasonal_role[index])
+            ch = discord.utils.get(guild.voice_channels, id=self.display_channels[index])
+            role = discord.utils.get(guild.roles, id=self.seasonal_role[index])
 
             await ch.edit(name=f'{role.name}: {len(role.members)} {self.emoji}')
 
@@ -56,7 +59,7 @@ class seasonalRoles(commands.Cog):
     @commands.Cog.listener()
     async def on_member_update(self, before, after):
         role = discord.utils.find(lambda r: r.name == self.roleName, after.guild.roles)
-        logging_channel = self.bot.get_channel(863854481773953055)
+        logging_channel = self.bot.get_channel(PBT.SEASONAL_ROLE_LOG)
 
         if before.display_name != after.display_name:
             try:
@@ -79,12 +82,7 @@ class seasonalRoles(commands.Cog):
     @commands.command(name='updatedisplay', aliases=['ud'])
     @commands.is_owner()
     async def updateSeasonalRoleDisplay(self, ctx):
-        display_channels = [
-            862526927440707614,  # PBT
-            863851458583592991,  # BB
-        ]
-
-        for channel in display_channels:
+        for channel in self.display_channels:
             try:
                 ch = discord.utils.get(ctx.guild.voice_channels, id=channel)
                 role = discord.utils.find(lambda r: r.name == self.roleName, ctx.guild.roles)
@@ -104,7 +102,7 @@ class seasonalRoles(commands.Cog):
     @commands.command(name='fixrole')
     @commands.is_owner()
     async def fixSeasonalRole(self, ctx):
-        role = discord.utils.get(self.BB.roles, id=862837874365300766)  # Sandy role
+        role = discord.utils.get(self.BB.roles, id=BB.SEASONAL_ROLE)  # Sandy role
         msg = await ctx.send('Fixing seasonal role...')
         i = 0
 
@@ -125,8 +123,8 @@ class seasonalRoles(commands.Cog):
     @commands.command(name='cleanrole')
     @commands.is_owner()
     async def clearSeasonalRole(self, ctx):
-        role = discord.utils.get(self.BB.roles, id=862837874365300766)  # Sandy role
-        msg = await ctx.send('Fixing seasonal role...')
+        role = discord.utils.get(self.BB.roles, id=BB.SEASONAL_ROLE)  # Sandy role
+        msg = await ctx.send('Clearing seasonal role...')
         i = 0
 
         # Add roles
