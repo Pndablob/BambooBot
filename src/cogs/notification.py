@@ -1,11 +1,10 @@
 import discord
-import oauth2client.client
 from discord.ext import commands, tasks
 
-from apiclient import discovery
-from oauth2client import client, file, tools
 import json
 from datetime import datetime, timedelta
+from apiclient import discovery
+from oauth2client import client, file, tools
 
 
 def getAuth():
@@ -88,7 +87,7 @@ class notification(commands.Cog):
         service = getAuth()
         try:
             r = service.forms().responses().list(formId=self.FORM_ID, filter=f"timestamp >= {(datetime.utcnow() - timedelta(minutes=m, hours=h, days=d)).isoformat('T')}Z").execute()
-        except oauth2client.client.HttpAccessTokenRefreshError:
+        except client.HttpAccessTokenRefreshError:
             await self.logch.send(f"<@317751950441447435> Token has been expired or revoked>")
             return
         
@@ -130,7 +129,7 @@ class notification(commands.Cog):
             r = service.forms().responses().list(formId=self.FORM_ID,
                                                  # str object -> datetime object
                                                  filter=f"timestamp >= {datetime.strptime(self.lastChecked, '%Y-%m-%d %H:%M:%S.%f').isoformat('T')}Z").execute()
-        except oauth2client.client.HttpAccessTokenRefreshError:
+        except client.HttpAccessTokenRefreshError:
             await self.logch.send(f"<@317751950441447435> Token has been expired or revoked>")
             return
 
