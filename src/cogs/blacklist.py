@@ -4,6 +4,8 @@ from datetime import datetime
 import discord
 from discord.ext import commands
 
+from src.utils.enums import *
+
 
 def load_json(filename):
     with open(filename) as infile:
@@ -13,12 +15,13 @@ def load_json(filename):
 class blacklist(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.blacklisted_words = [
+        self.blacklisted_words = []
+        """[
             "bitch", "dick", "cock", "pussy", "fag", "slut", "douche", "cunt", "porn", "nigger", "faggot", "niggar",
             "retarded", "horny", "jizz", "asshole", "cuck", "retard", "dicks", "cocks", "vagina", "boob", "pussies",
             "cunts", "titty", "tittie", "ejaculate", "faggots", "nazi", "nazis", "nigga", "niggas", "niggers", "sex",
             "pedo", "seks", "whore", "anus", "anul", "penis", "hentai", "nude", "cum", "rape", "semen"
-        ]
+        ]"""
 
     # Filter for blacklisted strings
     @commands.Cog.listener("on_message")
@@ -56,14 +59,17 @@ class blacklist(commands.Cog):
 
         # Checks messages for blacklisted words
         for i in range(len(self.blacklisted_words)):
-            if f' {self.blacklisted_words[i]} ' in msg or f' {self.blacklisted_words[i]}' in msg or f'{self.blacklisted_words[i]} ' in msg or msg.startswith(
-                    f'{self.blacklisted_words[i]}') or msg.endswith(f'{self.blacklisted_words[i]}'):
+            if f' {self.blacklisted_words[i]} ' in msg or f' {self.blacklisted_words[i]}' in msg or f'{self.blacklisted_words[i]} ' in msg or msg.startswith(f'{self.blacklisted_words[i]}') or msg.endswith(f'{self.blacklisted_words[i]}'):
                 await message.delete()
 
                 embed = discord.Embed(title='Bad Word!', color=0xff0000, timestamp=datetime.utcnow(),
                                       description=f'Your message containing `{self.blacklisted_words[i]}` was removed')
                 await message.author.send(embed=embed)
-                print(f'deleting [{self.blacklisted_words[i]}]')
+
+                logEmbed = discord.Embed(title='Bad Word', color=0xff0000, timestamp=datetime.utcnow(),
+                                         description=f'A message by {message.author} containing `{self.blacklisted_words[i]}` was removed')
+
+                await self.bot.get_channel(PBT.MOD_LOG.value).send(embed=logEmbed)
                 break
 
 

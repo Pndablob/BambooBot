@@ -17,28 +17,28 @@ class seasonalRoles(commands.Cog):
         if not self.updateDisplay.is_running():
             self.updateDisplay.start()
 
-        self.emoji = "🌞"
-        self.roleName = "Sandy"
-        self.BB = bot.get_guild(BB.ID)  # BB
+        self.emoji = "🍂"
+        self.roleName = "Leafy"
+        self.BB = bot.get_guild(BB.ID.value)  # BB
 
         self.guilds = [
-            PBT.ID,
-            BB.ID,
+            PBT.ID.value,
+            BB.ID.value,
         ]
         self.display_channels = [
-            PBT.SEASONAL_ROLE_DISPLAY,
-            BB.SEASONAL_ROLE_DISPLAY,
+            PBT.SEASONAL_ROLE_DISPLAY.value,
+            BB.SEASONAL_ROLE_DISPLAY.value,
         ]
         self.seasonal_role = [
-            PBT.SEASONAL_ROLE,
-            BB.SEASONAL_ROLE,
+            PBT.SEASONAL_ROLE.value,
+            BB.SEASONAL_ROLE.value,
         ]
             
     # Updates the seasonal-role display count every hour
     @tasks.loop(minutes=60)
     async def updateDisplay(self):
 
-        logging_channel = self.bot.get_channel(PBT.SEASONAL_ROLE_LOG)
+        logging_channel = self.bot.get_channel(PBT.SEASONAL_ROLE_LOG.value)
 
         for guild_id in self.guilds:
             guild = self.bot.get_guild(guild_id)
@@ -59,7 +59,7 @@ class seasonalRoles(commands.Cog):
     @commands.Cog.listener()
     async def on_member_update(self, before, after):
         role = discord.utils.find(lambda r: r.name == self.roleName, after.guild.roles)
-        logging_channel = self.bot.get_channel(PBT.SEASONAL_ROLE_LOG)
+        logging_channel = self.bot.get_channel(PBT.SEASONAL_ROLE_LOG.value)
 
         if before.display_name != after.display_name:
             try:
@@ -102,7 +102,7 @@ class seasonalRoles(commands.Cog):
     @commands.command(name='fixrole')
     @commands.is_owner()
     async def fixSeasonalRole(self, ctx):
-        role = discord.utils.get(self.BB.roles, id=BB.SEASONAL_ROLE)  # Sandy role
+        role = discord.utils.get(self.BB.roles.value, id=BB.SEASONAL_ROLE.value)  # Sandy role
         msg = await ctx.send('Fixing seasonal role...')
         i = 0
 
@@ -123,7 +123,7 @@ class seasonalRoles(commands.Cog):
     @commands.command(name='cleanrole')
     @commands.is_owner()
     async def clearSeasonalRole(self, ctx):
-        role = discord.utils.get(self.BB.roles, id=BB.SEASONAL_ROLE)  # Sandy role
+        role = discord.utils.get(self.BB.roles, id=BB.SEASONAL_ROLE.value)  # Sandy role
         msg = await ctx.send('Clearing seasonal role...')
         i = 0
 

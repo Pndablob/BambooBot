@@ -24,7 +24,7 @@ def main():
     @bot.event
     async def on_disconnect():
         logging.warning("Bot disconnected")
-        ch = bot.get_channel(PBT.LOGS)
+        ch = bot.get_channel(PBT.LOGS.value)
         embed = discord.Embed(title='Bot Disconnected', color=0xff0000, timestamp=datetime.utcnow())
         signature(embed=embed)
         await ch.send(embed=embed)
@@ -39,7 +39,7 @@ def main():
         logging.warning(f'Logged in as {bot.user.name} ({bot.user.id})')
 
         # Sends a message stating the bot ready
-        ch = bot.get_channel(PBT.LOGS)
+        ch = bot.get_channel(PBT.LOGS.value)
         embed = discord.Embed(title='Bot Connected', color=0x08c744, timestamp=datetime.utcnow())
         signature(embed=embed)
         await ch.send(embed=embed)
@@ -49,7 +49,7 @@ def main():
         logging.warning(f'Logged in {guild} ({guild.id})')
 
         # Checks if guild is BB
-        if guild.id == BB.ID:
+        if guild.id == BB.ID.value:
             # Loads all cogs on startup
             for filename in os.listdir('./cogs'):
                 try:
@@ -59,8 +59,8 @@ def main():
                 except commands.ExtensionAlreadyLoaded:
                     pass
                 except commands.ExtensionError or commands.ExtensionFailed or commands.ExtensionNotFound or commands.ExtensionNotLoaded:
-                    ch = bot.get_channel(PBT.ERROR_LOG)
-                    await ch.send(f"<@{PBT.OWNER}> Extension Error")
+                    ch = bot.get_channel(PBT.ERROR_LOG.value)
+                    await ch.send(f"<@{PBT.OWNER.value}> Extension Error")
 
             print(f"Bot startup time: {time.time()-startTime} seconds")
 

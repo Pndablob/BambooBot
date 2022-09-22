@@ -5,6 +5,7 @@ import json
 from datetime import datetime, timedelta
 from apiclient import discovery
 from oauth2client import client, file, tools
+from src.utils.enums import *
 
 
 def getAuth():
@@ -141,7 +142,7 @@ class notification(commands.Cog):
         if r == {}:
             return
 
-        guild = self.bot.get_guild(983840745763004536)  # SOS
+        guild = self.bot.get_guild(SOS.ID.value)  # SOS
         notif_channel = self.bot.get_channel(983841380512169994)  # student-registrations
 
         topicRoles = [

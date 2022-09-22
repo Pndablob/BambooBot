@@ -21,7 +21,7 @@ class userUtils(commands.Cog):
     async def echo(self, ctx, *, msg):
         await ctx.message.delete()
 
-        ch = self.bot.get_channel(PBT.DM_LOG)
+        ch = self.bot.get_channel(PBT.DM_LOG.value)
         embed = discord.Embed(title='Echo 📣', description=f'Echoed message by {ctx.message.author.mention}\n',
                               color=0x2ecc71, timestamp=datetime.utcnow())
         embed.add_field(name='Message:', value=f'```{msg}```', inline=False)
@@ -37,7 +37,7 @@ class userUtils(commands.Cog):
         await ctx.message.delete()
         await user.send(msg)
 
-        ch = self.bot.get_channel(PBT.DM_LOG)
+        ch = self.bot.get_channel(PBT.DM_LOG.value)
         embed = discord.Embed(title='Boop! ❗', description=f'{user.mention} was poked', color=0x2ecc71,
                               timestamp=datetime.utcnow())
         embed.add_field(name='Message:', value=f'```{msg}```', inline=False)
@@ -52,7 +52,7 @@ class userUtils(commands.Cog):
             # not a DM, or it's just the bot itself
             return
 
-        channel = self.bot.get_channel(PBT.DM_LOG)
+        channel = self.bot.get_channel(PBT.DM_LOG.value)
         author = message.author
         content = message.clean_content
 

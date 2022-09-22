@@ -46,18 +46,18 @@ class colorRoles(commands.Cog):
 
         # Clears all color roles from a user
         async def clear_color_roles():
-            if guild == PBT.ID:
-                for role_id in PBT.COLORS:
+            if guild == PBT.ID.value:
+                for role_id in PBT.COLORS.value:
                     colorRole = discord.utils.get(ctx.guild.roles, id=role_id)
                     if colorRole in user.roles:
                         await user.remove_roles(colorRole)
-            elif guild == TZT.ID:
-                for role_id in TZT.COLORS:
+            elif guild == TZT.ID.value:
+                for role_id in TZT.COLORS.value:
                     colorRole = discord.utils.get(ctx.guild.roles, id=role_id)
                     if colorRole in user.roles:
                         await user.remove_roles(colorRole)
-            elif guild == BB.ID:
-                for role_id in BB.COLORS:
+            elif guild == BB.ID.value:
+                for role_id in BB.COLORS.value:
                     colorRole = discord.utils.get(ctx.guild.roles, id=role_id)
                     if colorRole in user.roles:
                         await user.remove_roles(colorRole)

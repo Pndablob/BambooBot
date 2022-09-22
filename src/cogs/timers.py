@@ -17,7 +17,7 @@ class timers(commands.Cog):
     # Sends bot latency every 2 hours
     @tasks.loop(hours=2)
     async def checkup(self):
-        ch = self.bot.get_channel(PBT.LOGS)
+        ch = self.bot.get_channel(PBT.LOGS.value)
         embed = discord.Embed(title='Pong! 🏓', description=f'```{round(self.bot.latency * 1000)}ms```',
                               color=0x2ecc71, timestamp=datetime.utcnow())
         signature(embed)
@@ -28,12 +28,12 @@ class timers(commands.Cog):
     @tasks.loop(minutes=60)
     async def updateMemberCount(self):
         guilds = [
-            BB.ID,
+            BB.ID.value,
         ]
         display_channels = [
-            BB.MEMBER_DISPLAY,
+            BB.MEMBER_DISPLAY.value,
         ]
-        logging_channel = self.bot.get_channel(PBT.LOGS)
+        logging_channel = self.bot.get_channel(PBT.LOGS.value)
 
         for guild_id in guilds:
             guild = self.bot.get_guild(guild_id)
