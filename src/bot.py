@@ -60,7 +60,7 @@ def main():
                     pass
                 except commands.ExtensionError or commands.ExtensionFailed or commands.ExtensionNotFound or commands.ExtensionNotLoaded:
                     ch = bot.get_channel(PBT.ERROR_LOG.value)
-                    await ch.send(f"<@{PBT.OWNER.value}> Extension Error")
+                    await ch.send(f"<@{PBT.OWNER.value}> Extension Error in `{filename}`")
 
             print(f"Bot startup time: {time.time()-startTime} seconds")
 

@@ -16,6 +16,9 @@ class autoRole(commands.Cog):
     # auto verify in BB for members older than 30 days
     @commands.Cog.listener()
     async def on_member_join(self, member: discord.Member):
+        if member.guild != BB.ID.value:
+            return
+
         if (datetime.now().timestamp() - member.created_at.timestamp()) > 2592000:
             await member.add_roles(self.role)
 

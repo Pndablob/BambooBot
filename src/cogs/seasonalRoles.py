@@ -102,7 +102,7 @@ class seasonalRoles(commands.Cog):
     @commands.command(name='fixrole')
     @commands.is_owner()
     async def fixSeasonalRole(self, ctx):
-        role = discord.utils.get(self.BB.roles.value, id=BB.SEASONAL_ROLE.value)  # Sandy role
+        role = discord.utils.get(self.BB.roles, id=BB.SEASONAL_ROLE.value)  # Sandy role
         msg = await ctx.send('Fixing seasonal role...')
         i = 0
 
