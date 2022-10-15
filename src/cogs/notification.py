@@ -1,3 +1,6 @@
+import io
+import time
+
 import discord
 from discord.ext import commands, tasks
 
@@ -12,6 +15,7 @@ def getAuth():
     DISCOVERY_DOC = "https://forms.googleapis.com/$discovery/rest?version=v1"
     with open("../secrets/creds.json") as f:
         creds = json.load(f)
+
     oauth = client.OAuth2Credentials(
         access_token=None,
         client_id=creds["client_id"],
@@ -32,8 +36,6 @@ class notification(commands.Cog):
 
         if not self.checkFormResponses.is_running():
             self.checkFormResponses.start()
-
-        self.logch = self.bot.get_channel(820473911753310208)  # bot-commands
 
         self.SCOPES = "https://www.googleapis.com/auth/forms.responses.readonly"
 
@@ -63,21 +65,42 @@ class notification(commands.Cog):
             "1ea2b378",  # t&c
         ]
 
-    @commands.command()
+    @commands.command(aliases=['tokenstatus', 'ts'])
     @commands.is_owner()
-    async def apiStatus(self, ctx):
-        pass
+    async def token_status(self, ctx):
+        with open("../secrets/creds.json") as f:
+            creds = json.load(f)
+
+        # zulu time -> timestamp with + 1 hr access token duration and + 7 days expiry
+        token_expiry = (datetime.strptime(creds['token_expiry'][:-1], '%Y-%m-%dT%H:%M:%S') - timedelta(days=7, hours=1)).timestamp()
+
+        # time between token expiry and last auth
+        delta = datetime.utcnow().timestamp() - token_expiry
+
+        if delta <= 0:
+            await ctx.send("Token is expired")
+        else:
+            await ctx.send(f"Token is valid and will expire <t:{int(datetime.now().timestamp() + delta)}:R>")
 
     @commands.command()
     @commands.is_owner()
     async def reauth(self, ctx, forceReauth=False):
         storage = file.Storage("../secrets/creds.json")
         creds = storage.get()
-        if creds is None or forceReauth:
+
+        if creds.invalid or creds is None or forceReauth:
             try:
                 flow = client.flow_from_clientsecrets("../secrets/client_secrets.json", self.SCOPES)
-                tools.run_flow(flow, storage)
+                creds = tools.run_flow(flow, storage)
+
+                with open("../secrets/creds.json", "wt") as f:
+                    f.truncate()
+                    f.seek(0)
+                    f.write(f"{client.OAuth2Credentials.to_json(creds)}")
+
                 await ctx.send("OAuth Successful")
+                await ctx.send(f"Token expires: <t:{int(time.time() + timedelta(days=7).total_seconds())}:f>")
+
             except:
                 await ctx.send("Authentication failed")
 
@@ -87,11 +110,12 @@ class notification(commands.Cog):
     async def getResponses(self, ctx, d: int = 0, h: int = 1, m: int = 0):
         service = getAuth()
         try:
-            r = service.forms().responses().list(formId=self.FORM_ID, filter=f"timestamp >= {(datetime.utcnow() - timedelta(minutes=m, hours=h, days=d)).isoformat('T')}Z").execute()
+            r = service.forms().responses().list(formId=self.FORM_ID,
+                                                 filter=f"timestamp >= {(datetime.utcnow() - timedelta(minutes=m, hours=h, days=d)).isoformat('T')}Z").execute()
         except client.HttpAccessTokenRefreshError:
-            await self.logch.send(f"<@317751950441447435> Token has been expired or revoked>")
+            await ctx.message.reply(f"Token has been expired or revoked", mention_author=True)
             return
-        
+
         if r == {}:
             await ctx.send(
                 f"No new responses since <t:{round((datetime.now() - timedelta(minutes=m, hours=h, days=d)).timestamp())}:R>")
@@ -131,7 +155,7 @@ class notification(commands.Cog):
                                                  # str object -> datetime object
                                                  filter=f"timestamp >= {datetime.strptime(self.lastChecked, '%Y-%m-%d %H:%M:%S.%f').isoformat('T')}Z").execute()
         except client.HttpAccessTokenRefreshError:
-            await self.logch.send(f"<@317751950441447435> Token has been expired or revoked>")
+            await self.bot.get_channel(PBT.ERROR_LOG.value).send("Token has been expired or revoked")
             return
 
         with open("../secrets/lastChecked.txt", "wt") as f:
