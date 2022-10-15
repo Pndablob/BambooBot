@@ -1,16 +1,21 @@
+import io
+import time
+
 import discord
 from discord.ext import commands, tasks
 
-from apiclient import discovery
-from oauth2client import client, file, tools
 import json
 from datetime import datetime, timedelta
+from apiclient import discovery
+from oauth2client import client, file, tools
+from src.utils.enums import *
 
 
-def authAPI():
+def getAuth():
     DISCOVERY_DOC = "https://forms.googleapis.com/$discovery/rest?version=v1"
     with open("../secrets/creds.json") as f:
         creds = json.load(f)
+
     oauth = client.OAuth2Credentials(
         access_token=None,
         client_id=creds["client_id"],
@@ -60,29 +65,57 @@ class notification(commands.Cog):
             "1ea2b378",  # t&c
         ]
 
-    @commands.command()
+    @commands.command(aliases=['tokenstatus', 'ts'])
     @commands.is_owner()
-    async def apiStatus(self, ctx):
-        pass
+    async def token_status(self, ctx):
+        with open("../secrets/creds.json") as f:
+            creds = json.load(f)
+
+        # zulu time -> timestamp with + 1 hr access token duration and + 7 days expiry
+        token_expiry = (datetime.strptime(creds['token_expiry'][:-1], '%Y-%m-%dT%H:%M:%S') - timedelta(days=7, hours=1)).timestamp()
+
+        # time between token expiry and last auth
+        delta = datetime.utcnow().timestamp() - token_expiry
+
+        if delta <= 0:
+            await ctx.send("Token is expired")
+        else:
+            await ctx.send(f"Token is valid and will expire <t:{int(datetime.now().timestamp() + delta)}:R>")
 
     @commands.command()
     @commands.is_owner()
-    async def reauth(self, ctx):
+    async def reauth(self, ctx, forceReauth=False):
         storage = file.Storage("../secrets/creds.json")
-        try:
-            flow = client.flow_from_clientsecrets("../secrets/client_secrets.json", self.SCOPES)
-            tools.run_flow(flow, storage)
-            await ctx.send("OAuth Successful")
-        except:
-            await ctx.send("Authentication failed")
+        creds = storage.get()
+
+        if creds.invalid or creds is None or forceReauth:
+            try:
+                flow = client.flow_from_clientsecrets("../secrets/client_secrets.json", self.SCOPES)
+                creds = tools.run_flow(flow, storage)
+
+                with open("../secrets/creds.json", "wt") as f:
+                    f.truncate()
+                    f.seek(0)
+                    f.write(f"{client.OAuth2Credentials.to_json(creds)}")
+
+                await ctx.send("OAuth Successful")
+                await ctx.send(f"Token expires: <t:{int(time.time() + timedelta(days=7).total_seconds())}:f>")
+
+            except:
+                await ctx.send("Authentication failed")
 
     # get and print past responses
     @commands.command(aliases=["getr", "getR"])
     @commands.is_owner()
     async def getResponses(self, ctx, d: int = 0, h: int = 1, m: int = 0):
-        service = authAPI()
-        r = service.forms().responses().list(formId=self.FORM_ID,
-                                             filter=f"timestamp >= {(datetime.utcnow() - timedelta(minutes=m, hours=h, days=d)).isoformat('T')}Z").execute()
+        service = getAuth()
+        try:
+            r = service.forms().responses().list(formId=self.FORM_ID,
+                                                 filter=f"timestamp >= {(datetime.utcnow() - timedelta(minutes=m, hours=h, days=d)).isoformat('T')}Z").execute()
+        except client.HttpAccessTokenRefreshError:
+            await ctx.message.reply(f"Token has been expired or revoked", mention_author=True)
+            return
+
         if r == {}:
             await ctx.send(
                 f"No new responses since <t:{round((datetime.now() - timedelta(minutes=m, hours=h, days=d)).timestamp())}:R>")
@@ -103,26 +136,37 @@ class notification(commands.Cog):
                     embed.add_field(name=f"Question {a}", value="No Response", inline=True)
                 a += 1
 
-            await ctx.send(embed=embed)
+            await ctx.send(
+                f"Responses from <t:{round((datetime.now() - timedelta(minutes=m, hours=h, days=d)).timestamp())}:R> ",
+                embed=embed)
             c += 1
 
     # check for new form responses every hour
     @tasks.loop(hours=1)
     async def checkFormResponses(self):
-        service = authAPI()
-        r = service.forms().responses().list(formId=self.FORM_ID,
-                                             filter=f"timestamp >= {self.lastChecked.isoformat('T')}Z").execute()
+        service = getAuth()
 
         # rewrite file with updated lastChecked time
-        with open("../secrets/lastChecked.txt", 'wt') as f:
+        with open("../secrets/lastChecked.txt", 'rt') as f:
+            self.lastChecked = f.readline().rstrip()
+
+        try:
+            r = service.forms().responses().list(formId=self.FORM_ID,
+                                                 # str object -> datetime object
+                                                 filter=f"timestamp >= {datetime.strptime(self.lastChecked, '%Y-%m-%d %H:%M:%S.%f').isoformat('T')}Z").execute()
+        except client.HttpAccessTokenRefreshError:
+            await self.bot.get_channel(PBT.ERROR_LOG.value).send("Token has been expired or revoked")
+            return
+
+        with open("../secrets/lastChecked.txt", "wt") as f:
             f.truncate()
             f.seek(0)
-            f.write(str(datetime.utcnow()))
+            f.write(f"{datetime.utcnow()}")
 
         if r == {}:
             return
 
-        guild = self.bot.get_guild(983840745763004536)  # SOS
+        guild = self.bot.get_guild(SOS.ID.value)  # SOS
         notif_channel = self.bot.get_channel(983841380512169994)  # student-registrations
 
         topicRoles = [
@@ -143,7 +187,6 @@ class notification(commands.Cog):
         q = [0, 2, 8, 9, 10, 11]
 
         # r['responses']['answers'][{questionId}]['textAnswers']['answers'][0]['value']
-        c = 1
         for response in r['responses']:
             msg = ""
             color = 0x2ecc71
@@ -161,7 +204,7 @@ class notification(commands.Cog):
                 for r in topicRoles:
                     msg += guild.get_role(r).mention
 
-            embed = discord.Embed(title=f"New Response {c}", timestamp=datetime.utcnow(), color=color,
+            embed = discord.Embed(title=f"New Student Registration", timestamp=datetime.utcnow(), color=color,
                                   # RFC-3339 Z from API -> timestamp -> unix with timezone adjustment
                                   description=f"Form submitted at <t:{round((datetime.strptime(response['createTime'][:-1], '%Y-%m-%dT%H:%M:%S.%f') - timedelta(hours=4)).timestamp())}:f>")
             for i in range(len(q)):
@@ -170,7 +213,6 @@ class notification(commands.Cog):
                     embed.add_field(name=f"{responseHeader[i]}", value=ans, inline=True)
                 except KeyError:
                     embed.add_field(name=f"{responseHeader[i]}", value="No Response", inline=True)
-            c += 1
 
             await notif_channel.send(f"{msg}", embed=embed)
 

@@ -7,6 +7,8 @@ import logging
 import discord
 from discord.ext import commands
 
+from utils.enums import *
+
 
 # 2ecc71 Hex code for color embeds
 def signature(embed):
@@ -22,9 +24,10 @@ def main():
     @bot.event
     async def on_disconnect():
         logging.warning("Bot disconnected")
-        ch = bot.get_channel(820473911753310208)
-
-        await ch.send(f'```md\n# Bot disconnected```')
+        ch = bot.get_channel(PBT.LOGS.value)
+        embed = discord.Embed(title='Bot Disconnected', color=0xff0000, timestamp=datetime.utcnow())
+        signature(embed=embed)
+        await ch.send(embed=embed)
 
     @bot.event
     async def on_ready():
@@ -35,28 +38,30 @@ def main():
         await bot.change_presence(activity=discord.Game('Bamboo Simulator'))
         logging.warning(f'Logged in as {bot.user.name} ({bot.user.id})')
 
-        on_ready_channels = [
-            820473911753310208
-        ]
-
-        # Sends a message in on_ready_channels stating the bot ready
-        for on_ready_channels in on_ready_channels:
-            ch = bot.get_channel(on_ready_channels)
-            embed = discord.Embed(title='Bot Connected', color=0x08c744, timestamp=datetime.utcnow())
-            signature(embed=embed)
-            await ch.send(embed=embed)
+        # Sends a message stating the bot ready
+        ch = bot.get_channel(PBT.LOGS.value)
+        embed = discord.Embed(title='Bot Connected', color=0x08c744, timestamp=datetime.utcnow())
+        signature(embed=embed)
+        await ch.send(embed=embed)
 
     @bot.event
     async def on_guild_available(guild):
         logging.warning(f'Logged in {guild} ({guild.id})')
 
         # Checks if guild is BB
-        if guild.id == 450878205294018560:
+        if guild.id == BB.ID.value:
             # Loads all cogs on startup
             for filename in os.listdir('./cogs'):
-                if filename.endswith('.py'):
-                    bot.load_extension(f'cogs.{filename[:-3]}')  # Cut last 3 char (.py)
-                    print(f'loaded {filename}')
+                try:
+                    if filename.endswith('.py'):
+                        bot.load_extension(f'cogs.{filename[:-3]}')  # Cut last 3 char (.py)
+                        print(f'loaded {filename}')
+                except commands.ExtensionAlreadyLoaded:
+                    pass
+                except commands.ExtensionError or commands.ExtensionFailed or commands.ExtensionNotFound or commands.ExtensionNotLoaded:
+                    ch = bot.get_channel(PBT.ERROR_LOG.value)
+                    await ch.send(f"<@{PBT.OWNER.value}> Extension Error in `{filename}`")
+
             print(f"Bot startup time: {time.time()-startTime} seconds")
 
     @bot.command(aliases=['l'])
@@ -165,4 +170,4 @@ if __name__ == '__main__':
     main()
 
     # run bot
-    bot.run(token)
+    bot.run(token, reconnect=True)
