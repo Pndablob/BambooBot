@@ -1,5 +1,6 @@
 import random
 from datetime import datetime
+from PIL import Image, ImageColor
 
 import discord
 from discord.ext import commands
@@ -82,6 +83,30 @@ class chatUtils(commands.Cog):
         embed.description = f'Generated `{repeat}` random integers from `1` to `{ceiling}`, inclusive\n```ini\n{nums}```'
 
         await ctx.send(embed=embed)
+
+    # gets color given hex or rgb
+    @commands.command(name="gcolor")
+    async def getColor(self, ctx, arg):
+        await ctx.send(arg)
+        arg = int(arg, 16)
+        print(type(arg))
+        if type(arg) == int:
+            h = arg
+            rgb = ImageColor.getcolor(arg, "RGB")
+        elif type(arg) == tuple and len(arg) == 3:
+            h = '%02x%02x%02x' % arg
+            rgb = arg
+        else:
+            await ctx.send("Invalid color argument")
+            return
+
+        img = Image.new("RGB", (300, 300), rgb)
+
+        embed = discord.Embed(title=f"🎨 Information about the color **#{h}**")
+        embed.add_field(name="Hex", value=f"{h}")
+        embed.add_field(name="RGB", value=f"{rgb}")
+
+        await ctx.send(f"{img}", embed=embed)
 
     # Purges a given number of messages
     @commands.command(aliases=['purge'])

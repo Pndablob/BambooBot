@@ -88,7 +88,7 @@ class notification(commands.Cog):
         storage = file.Storage("../secrets/creds.json")
         creds = storage.get()
 
-        if creds.invalid or creds is None or forceReauth:
+        if creds.invalid is False or creds is None or forceReauth:
             try:
                 flow = client.flow_from_clientsecrets("../secrets/client_secrets.json", self.SCOPES)
                 creds = tools.run_flow(flow, storage)
