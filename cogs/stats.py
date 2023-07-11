@@ -36,11 +36,6 @@ class Stats(commands.Cog):
 
         await ctx.send(embed=embed)
 
-    @commands.command(aliases=['info'])
-    async def about(self, ctx):
-        """Shows some information about the bot"""
-        pass
-
 
 async def setup(bot):
     await bot.add_cog(Stats(bot=bot))

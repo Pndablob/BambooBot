@@ -9,7 +9,15 @@ log = logging.getLogger('discord')
 initial_extensions = (
     'cogs.admin',
     'cogs.stats',
+    'cogs.rng',
+    'cogs.mod',
+    'cogs.info',
 )
+
+
+# TODO command error handling
+# TODO organize commands into main and sub commands
+# TODO slash commands
 
 
 class BambooBot(commands.Bot):
