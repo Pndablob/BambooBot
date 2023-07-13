@@ -1,5 +1,6 @@
 import logging
 from datetime import datetime
+from cogs.utils.constants import PBT
 
 from discord.ext import commands
 import discord
@@ -12,6 +13,7 @@ initial_extensions = (
     'cogs.rng',
     'cogs.mod',
     'cogs.info',
+    'cogs.chat',
 )
 
 
@@ -35,6 +37,8 @@ class BambooBot(commands.Bot):
         )
 
     async def setup_hook(self) -> None:
+        await self.tree.sync(guild=discord.Object(PBT.id))
+
         for extension in initial_extensions:
             try:
                 await self.load_extension(extension)
