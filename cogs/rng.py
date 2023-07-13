@@ -66,6 +66,8 @@ class RNG(commands.Cog):
 
         embed.description = f'Generated `{repeat}` random integers from `1` to `{ceiling}`, inclusive\n```ini\n{nums}```'
 
+        add_author(embed, ctx.author)
+
         await ctx.send(embed=embed)
 
 
