@@ -27,8 +27,16 @@ class Admin(commands.Cog):
         # remove `foo`
         return content.strip('` \n')
 
-    async def cog_check(self, ctx) -> bool:
-        return await self.bot.is_owner(ctx.author)
+    @commands.command(name='sync')
+    @commands.is_owner()
+    @commands.guild_only()
+    async def sync_commands(self, ctx, glo=False):
+        if glo:
+            await self.bot.tree.sync()
+            await ctx.send(f"Synced application commands globally")
+        else:
+            await self.bot.tree.copy_global_to(guild=ctx.guild)
+            await ctx.send(f"Synced application commands to `{ctx.guild.name}`")
 
     def get_syntax_error(self, e: SyntaxError) -> str:
         if e.text is None:
@@ -109,7 +117,7 @@ class Admin(commands.Cog):
     async def _eval(self, ctx, *, body: str):
         """Evaluates a code"""
 
-        no_evals = ['token', 'delete']
+        no_evals = ['token', 'delete', 'exit']
         if any(w in body for w in no_evals):
             await ctx.send(f"Found prohibited string(s) ... terminating eval")
             return
