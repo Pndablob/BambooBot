@@ -1,6 +1,6 @@
 from enum import Enum, IntEnum
 
-bot_color = 0x2ecc71
+BOT_COLOR = 0x2ecc71
 
 
 class PBT(IntEnum):
