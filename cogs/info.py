@@ -1,5 +1,5 @@
 from datetime import datetime
-from cogs.utils.constants import bot_color
+from cogs.utils.constants import BOT_COLOR
 
 from discord.ext import commands
 from discord import app_commands
@@ -31,32 +31,33 @@ class Info(commands.Cog):
         if member == interaction.guild.owner:
             badge_list += "<:ServerOwner:1128899832921215017> "
         for f in member.public_flags.all():
-            if f.value == 1:
-                badge_list += "<:DiscordStaff:1128899787996016761> "  # staff
-            elif f.value == 2:
-                badge_list += "<:Partner:1128899786523803798> "  # partner
-            elif f.value == 4:
-                badge_list += "<:HypesquadEvents:1128899785403928576> "  # hypesquad events
-            elif f.value == 8:
-                badge_list += "<:BugHunter:1128899875078152232> "  # bug_hunter
-            elif f.value == 64:
-                badge_list += "<:HypesquadBravery:1128899830404616213> "  # hypesquad bravery
-            elif f.value == 128:
-                badge_list += "<:HypesquadBrilliance:1128899831922970797> "  # hypesquad brilliance
-            elif f.value == 256:
-                badge_list += "<:HypesquadBalance:1128899829477670933> "  # hypesquad balance
-            elif f.value == 512:
-                badge_list += "<:EarlySupporter:1128899788457394227 "  # early supporter
-            elif f.value == 16384:
-                badge_list += "<:BugHunter2:1128899873891176488> "  # bug hunter level 2
-            elif f.value == 131072:
-                badge_list += "<:VerifiedDeveloper:1128899793356328980> "  # verified bot developer
-            elif f.value == 262144:
-                badge_list += "<:CertifiedMod:1128899784317599744> "  # discord moderator academy alumni
-            elif f.value == 4194304:
-                badge_list += "<:ActiveDeveloper:1128906229880733718> "  # active developer
+            match f.value:
+                case 1:
+                    badge_list += "<:DiscordStaff:1128899787996016761> "  # staff
+                case 2:
+                    badge_list += "<:Partner:1128899786523803798> "  # partner
+                case 4:
+                    badge_list += "<:HypesquadEvents:1128899785403928576> "  # hypesquad events
+                case 8:
+                    badge_list += "<:BugHunter:1128899875078152232> "  # bug_hunter
+                case 64:
+                    badge_list += "<:HypesquadBravery:1128899830404616213> "  # hypesquad bravery
+                case 128:
+                    badge_list += "<:HypesquadBrilliance:1128899831922970797> "  # hypesquad brilliance
+                case 256:
+                    badge_list += "<:HypesquadBalance:1128899829477670933> "  # hypesquad balance
+                case 512:
+                    badge_list += "<:EarlySupporter:1128899788457394227 "  # early supporter
+                case 16384:
+                    badge_list += "<:BugHunter2:1128899873891176488> "  # bug hunter level 2
+                case 131072:
+                    badge_list += "<:VerifiedDeveloper:1128899793356328980> "  # verified bot developer
+                case 262144:
+                    badge_list += "<:CertifiedMod:1128899784317599744> "  # discord moderator academy alumni
+                case 4194304:
+                    badge_list += "<:ActiveDeveloper:1128906229880733718> "  # active developer
 
-        color = bot_color if len(member.roles) == 1 else member.color
+        color = BOT_COLOR if len(member.roles) == 1 else member.color
 
         embed = discord.Embed(title=f"{member.name}", color=color, timestamp=datetime.now(),
                               description=badge_list[:-1])
@@ -74,7 +75,7 @@ class Info(commands.Cog):
 
         await interaction.response.send_message(embed=embed)
 
-    @app_commands.command(name="server", description="Shows information about the current guild")
+    @app_commands.command(name="server", description="Shows information about the current server")
     async def guild_info(self, interaction: discord.Interaction):
         """shows information about the current guild"""
         guild = interaction.guild
@@ -85,7 +86,7 @@ class Info(commands.Cog):
         ]
         role_list = ""
 
-        color = bot_color if len(guild.owner.roles) == 1 else guild.owner.color
+        color = BOT_COLOR if len(guild.owner.roles) == 1 else guild.owner.color
 
         embed = discord.Embed(description=f"Created by **{guild.owner.name}** <t:{round(guild.created_at.timestamp())}:R>",
                               color=color, timestamp=datetime.utcnow())
@@ -111,7 +112,9 @@ class Info(commands.Cog):
     @app_commands.command(name="about", description="Shows information about the bot")
     async def server_info(self, interaction: discord.Interaction):
         """shows information about the bot"""
-        pass
+        embed = discord.Embed()
+        embed.set_author(name="Bamboo Bot", icon_url="https://cdn.discordapp.com/emojis/851191181315538965.webp?size=128&quality=lossless")
+        await interaction.response.send_message(embed=embed)
 
 
 async def setup(bot):

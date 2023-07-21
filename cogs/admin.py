@@ -4,7 +4,7 @@ import textwrap
 import traceback
 from contextlib import redirect_stdout
 from bot import initial_extensions
-from cogs.utils.constants import bot_color
+from cogs.utils.constants import BOT_COLOR
 
 from discord.ext import commands
 import discord

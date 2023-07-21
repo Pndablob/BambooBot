@@ -1,6 +1,6 @@
 import math
 from datetime import datetime
-from cogs.utils.constants import bot_color
+from cogs.utils.constants import BOT_COLOR
 
 from discord.ext import commands
 import discord
@@ -15,7 +15,7 @@ class Stats(commands.Cog):
     @commands.command()
     async def ping(self, ctx):
         embed = discord.Embed(title="Pong! 🏓", description=f"```md\n[{round(self.bot.latency * 1000)}ms]```",
-                              color=bot_color, timestamp=datetime.now())
+                              color=BOT_COLOR, timestamp=datetime.now())
         await ctx.send(embed=embed)
 
     def get_uptime(self):
@@ -32,7 +32,7 @@ class Stats(commands.Cog):
         minutes = math.floor((diff % 3600) / 60)  # Floor of (diff mod sec-in-hour) / sec-in-min (60)
         seconds = (diff % 60)  # diff mod sec-in-min
 
-        embed = discord.Embed(title='<:online:1127821209921400833> Uptime', color=bot_color, timestamp=datetime.now(),
+        embed = discord.Embed(title='<:online:1127821209921400833> Uptime', color=BOT_COLOR, timestamp=datetime.now(),
                               description=f"`{days}` days, `{hours}`hours, `{minutes}` minutes, `{seconds}` seconds")
 
         await ctx.send(embed=embed)
