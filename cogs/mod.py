@@ -1,6 +1,7 @@
-from cogs.utils.constants import bot_color
+from cogs.utils.constants import BOT_COLOR
 
 from discord.ext import commands
+from discord import app_commands
 import discord
 
 
@@ -8,19 +9,25 @@ class Mod(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(aliases=['purge'])
+    @app_commands.command(name="purge", description="Bulk delete channel messages")
+    @app_commands.describe(
+        messages="number of messages"
+    )
     @commands.has_permissions(manage_messages=True)
     @commands.bot_has_permissions(manage_messages=True)
-    async def clear(self, ctx, amount: int):
-        await ctx.channel.purge(limit=amount + 1)
-        await ctx.send(f"Purged **{amount}** messages in {ctx.channel.mention}")
+    async def clear(self, interaction: discord.Interaction, messages: int):
+        await interaction.channel.purge(limit=messages)
+        await interaction.response.send_message(f"Purged **{messages}** messages in {interaction.channel.mention}", ephemeral=True)
 
-    @commands.command(aliases=['sm'])
+    @app_commands.command(name='slowmode', description="Sets the channel slowmode")
+    @app_commands.describe(
+        seconds="slowmode delay"
+    )
     @commands.has_permissions(manage_messages=True)
     @commands.bot_has_permissions(manage_messages=True, manage_channels=True)
-    async def slowmode(self, ctx, delay: int):
-        await ctx.channel.edit(slowmode_delay=delay)
-        await ctx.send(f"Set the slowmode delay in {ctx.channel.mention} to `{delay}` seconds")
+    async def slowmode(self, interaction: discord.Interaction, seconds: app_commands.Range[int, 0, 21600]):
+        await interaction.channel.edit(slowmode_delay=seconds)
+        await interaction.response.send_message(f"Set the slowmode delay in {interaction.channel.mention} to `{seconds}` seconds", ephemeral=True)
 
 
 async def setup(bot):
