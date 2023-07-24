@@ -55,16 +55,17 @@ class Admin(commands.Cog):
                     await self.bot.load_extension(module)
                     log.info(f"Loaded extension: {module}")
             except commands.ExtensionError as e:
-                await ctx.send(f'{e.__class__.__name__}: {e}')
-            await msg.add_reaction('✅')
+                await ctx.send(f"```yaml\n{e.__class__.__name__}: {e}\n```", ephemeral=True)
+            log.info(f"Loaded all extensions")
+            await msg.add_reaction("✅")
         else:
             try:
                 await self.bot.load_extension(f"cogs.{module}")
                 log.info(f"Loaded extension: cogs.{module}")
             except commands.ExtensionError as e:
-                await ctx.send(f'{e.__class__.__name__}: {e}')
+                await ctx.send(f'```yaml\n{e.__class__.__name__}: {e}\n```', ephemeral=True)
             else:
-                await msg.add_reaction('✅')
+                await msg.add_reaction("✅")
 
     @commands.command(hidden=True, aliases=['ul'])
     @commands.is_owner()
@@ -78,18 +79,19 @@ class Admin(commands.Cog):
                     await self.bot.unload_extension(module)
                     log.info(f"Unloaded extension: {module}")
             except commands.ExtensionError as e:
-                await ctx.send(f'{e.__class__.__name__}: {e}')
+                await ctx.send(f"```yaml\n{e.__class__.__name__}: {e}\n```", ephemeral=True)
+            log.info(f"Unloaded all extensions")
             await msg.add_reaction('✅')
         else:
             try:
                 await self.bot.unload_extension(f"cogs.{module}")
                 log.info(f"Unloaded extension: cogs.{module}")
             except commands.ExtensionError as e:
-                await ctx.send(f'{e.__class__.__name__}: {e}')
+                await ctx.send(f"```yaml\n{e.__class__.__name__}: {e}\n```", ephemeral=True)
             else:
                 await msg.add_reaction('✅')
 
-    @commands.group(name='reload', aliases=['rl'], hidden=True, invoke_without_command=True)
+    @commands.command(hidden=True, name='reload', aliases=['rl'])
     @commands.is_owner()
     async def _reload(self, ctx, *, module: str):
         """Reloads a module."""
@@ -101,14 +103,15 @@ class Admin(commands.Cog):
                     await self.bot.reload_extension(module)
                     log.info(f"Reloaded extension: {module}")
             except commands.ExtensionError as e:
-                await ctx.send(f'{e.__class__.__name__}: {e}')
+                await ctx.send(f"```yaml\n{e.__class__.__name__}: {e}\n```", ephemeral=True)
+            log.info(f"Reloaded all extensions")
             await msg.add_reaction('✅')
         else:
             try:
                 await self.bot.reload_extension(f"cogs.{module}")
                 log.info(f"Reloaded extension: cogs.{module}")
             except commands.ExtensionError as e:
-                await ctx.send(f'{e.__class__.__name__}: {e}')
+                await ctx.send(f"```yaml\n{e.__class__.__name__}: {e}\n```", ephemeral=True)
             else:
                 await msg.add_reaction('✅')
 
@@ -119,7 +122,7 @@ class Admin(commands.Cog):
 
         no_evals = ['token', 'delete', 'exit']
         if any(w in body for w in no_evals):
-            await ctx.send(f"Found prohibited string(s) ... terminating eval")
+            await ctx.send(f"Found prohibited string(s) ... terminating eval", ephemeral=True)
             return
 
         env = {
@@ -141,7 +144,10 @@ class Admin(commands.Cog):
         try:
             exec(to_compile, env)
         except Exception as e:
-            return await ctx.send(f'```py\n{e.__class__.__name__}: {e}\n```')
+            return await ctx.send(
+                embed=discord.Embed(title="📤 Output", description=f"```py\n{e.__class__.__name__}: {e}\n```"),
+                ephemeral=True
+            )
 
         func = env['func']
         try:
@@ -149,20 +155,29 @@ class Admin(commands.Cog):
                 ret = await func()
         except Exception as e:
             value = stdout.getvalue()
-            await ctx.send(f'```py\n{value}{traceback.format_exc()}\n```')
+            await ctx.send(
+                embed=discord.Embed(title="📤 Output", description=f"```py\n{value}{traceback.format_exc()}\n```"),
+                ephemeral=True
+            )
         else:
             value = stdout.getvalue()
             try:
-                await ctx.message.add_reaction('\u2705')
+                await ctx.message.add_reaction('\u2705')  # checkmark ✅
             except:
                 pass
 
             if ret is None:
                 if value:
-                    await ctx.send(f'```py\n{value}\n```')
+                    await ctx.send(
+                        embed=discord.Embed(title="📤 Output", description=f"```py\n{value}\n```"),
+                        ephemeral=True
+                    )
             else:
                 self._last_result = ret
-                await ctx.send(f'```py\n{value}{ret}\n```')
+                await ctx.send(
+                    embed=discord.Embed(title="📤 Output", description=f"```py\n{value}{ret}\n```"),
+                    ephemeral=True
+                )
 
 
 async def setup(bot):
