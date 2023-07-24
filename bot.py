@@ -14,12 +14,18 @@ initial_extensions = (
     'cogs.mod',
     'cogs.info',
     'cogs.chat',
+    'cogs.music',
 )
 
 
-# TODO command error handling
-# TODO organize commands into main and sub commands
 # TODO slash commands
+# TODO music cog
+# TODO command error handling
+# TODO pagination (discord.ext.menus)?
+# TODO custom help commands
+# TODO organize commands into main and sub commands
+# TODO git push pull using commands
+# TODO vps hosting
 
 
 class BambooBot(commands.Bot):
@@ -51,18 +57,21 @@ class BambooBot(commands.Bot):
             self.start_time = datetime.utcnow()
 
         log.info(f"Bot ready: {self.user} (ID: {self.user.id})")
+        log.info(f"Bot started in {datetime.utcnow().timestamp() - run_time} seconds")
 
 
 if __name__ == '__main__':
+    run_time = datetime.utcnow().timestamp()
+
     token = open("token.txt").readline().rstrip()
 
     bot = BambooBot()
 
     # logging
-    discord.utils.setup_logging()
-    handler = logging.FileHandler(filename='bamboo_bot.log', encoding='utf-8', mode='w')
+    file_handler = logging.FileHandler(filename='bamboo_bot.log', encoding='utf-8', mode='w')
     dt_fmt = '%Y-%m-%d %H:%M:%S'
     fmt = logging.Formatter('[{asctime}] [{levelname:<7}] {name}: {message}', dt_fmt, style='{')
-    handler.setFormatter(fmt)
+    file_handler.setFormatter(fmt)
+    discord.utils.setup_logging(handler=file_handler, formatter=fmt, level=logging.DEBUG)
 
-    bot.run(token=token, reconnect=True, log_handler=handler, log_level=logging.INFO, log_formatter=fmt)
+    bot.run(token=token, reconnect=True)
