@@ -98,8 +98,8 @@ class Music(commands.Cog):
         try:
             player = await YTDLSource.from_url(url, loop=False, stream=True)
             interaction.guild.voice_client.play(player, after=lambda e: print(f'Player error: {e}') if e else None)
-        except discord.ClientException:
-            await interaction.response.send_message("Error playing song", ephemeral=True)
+        except discord.ClientException as e:
+            await interaction.response.send_message(f"Error playing song: {e.__class__.__name__}", ephemeral=True)
 
         await interaction.response.send_message(f'Now playing: **{player.title}** `[1/{len(self.playlist) + 1}]`')
 
