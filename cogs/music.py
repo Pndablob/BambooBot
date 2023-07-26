@@ -23,6 +23,7 @@ ytdl_format_options = {
     }
 
 ffmpeg_options = {
+        'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5',
         'options': '-vn',
     }
 
@@ -150,8 +151,6 @@ class Music(commands.Cog):
     async def show_playlist(self, interaction: discord.Interaction):
         """Returns the playlist of songs as a list of song titles"""
         pass
-
-
 
 
 async def setup(bot):
