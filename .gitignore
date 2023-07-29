@@ -1,7 +1,6 @@
 # additional files
 /secrets/
 *.json
-config.py
 token.txt
 
 # Pycharm files
