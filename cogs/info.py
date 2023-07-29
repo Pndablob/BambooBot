@@ -1,5 +1,5 @@
 from datetime import datetime
-from cogs.utils.constants import BOT_COLOR
+from cogs.utils.constants import EMBED_COLOR
 
 from discord.ext import commands
 from discord import app_commands
@@ -57,7 +57,7 @@ class Info(commands.Cog):
                 case 4194304:
                     badge_list += "<:ActiveDeveloper:1128906229880733718> "  # active developer
 
-        color = BOT_COLOR if len(member.roles) == 1 else member.color
+        color = EMBED_COLOR if len(member.roles) == 1 else member.color
 
         embed = discord.Embed(title=f"{member.name}", color=color, timestamp=datetime.now(),
                               description=badge_list[:-1])
@@ -86,7 +86,7 @@ class Info(commands.Cog):
         ]
         role_list = ""
 
-        color = BOT_COLOR if len(guild.owner.roles) == 1 else guild.owner.color
+        color = EMBED_COLOR if len(guild.owner.roles) == 1 else guild.owner.color
 
         embed = discord.Embed(description=f"Created by **{guild.owner.name}** <t:{round(guild.created_at.timestamp())}:R>",
                               color=color, timestamp=datetime.utcnow())

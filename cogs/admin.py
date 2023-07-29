@@ -4,7 +4,7 @@ import textwrap
 import traceback
 from contextlib import redirect_stdout
 from bot import initial_extensions
-from cogs.utils.constants import BOT_COLOR
+from cogs.utils.constants import EMBED_COLOR
 
 from discord.ext import commands
 import discord
@@ -30,13 +30,9 @@ class Admin(commands.Cog):
     @commands.command(name='sync')
     @commands.is_owner()
     @commands.guild_only()
-    async def sync_commands(self, ctx, glo=False):
-        if glo:
-            await self.bot.tree.sync()
-            await ctx.send(f"Synced application commands globally")
-        else:
-            await self.bot.tree.copy_global_to(guild=ctx.guild)
-            await ctx.send(f"Synced application commands to `{ctx.guild.name}`")
+    async def sync_commands(self, ctx):
+        await self.bot.tree.sync()
+        await ctx.send(f"Synced application commands globally")
 
     def get_syntax_error(self, e: SyntaxError) -> str:
         if e.text is None:

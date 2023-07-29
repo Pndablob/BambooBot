@@ -1,8 +1,9 @@
 import math
 from datetime import datetime
-from cogs.utils.constants import BOT_COLOR
+from cogs.utils.constants import EMBED_COLOR
 
 from discord.ext import commands
+from discord import app_commands
 import discord
 
 
@@ -12,18 +13,17 @@ class Stats(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command()
-    async def ping(self, ctx):
+    @app_commands.command(name="ping")
+    async def ping(self, interaction: discord.Interaction):
         embed = discord.Embed(title="Pong! 🏓", description=f"```md\n[{round(self.bot.latency * 1000)}ms]```",
-                              color=BOT_COLOR, timestamp=datetime.now())
-        await ctx.send(embed=embed)
+                              color=EMBED_COLOR, timestamp=datetime.now())
+        await interaction.response.send_message(embed=embed)
 
     def get_uptime(self):
-        print(datetime.utcnow())
         return round(datetime.timestamp(datetime.utcnow()) - datetime.timestamp(self.bot.start_time))
 
-    @commands.command(aliases=['ut'])
-    async def uptime(self, ctx):
+    @app_commands.command(name="uptime")
+    async def uptime(self, interaction: discord.Interaction):
         """Shows how long the bot has been online for"""
         diff = self.get_uptime()  # seconds since startup
 
@@ -32,10 +32,10 @@ class Stats(commands.Cog):
         minutes = math.floor((diff % 3600) / 60)  # Floor of (diff mod sec-in-hour) / sec-in-min (60)
         seconds = (diff % 60)  # diff mod sec-in-min
 
-        embed = discord.Embed(title='<:online:1127821209921400833> Uptime', color=BOT_COLOR, timestamp=datetime.now(),
+        embed = discord.Embed(title='<:online:1127821209921400833> Uptime', color=EMBED_COLOR, timestamp=datetime.now(),
                               description=f"`{days}` days, `{hours}`hours, `{minutes}` minutes, `{seconds}` seconds")
 
-        await ctx.send(embed=embed)
+        await interaction.response.send_message(embed=embed)
 
 
 async def setup(bot):

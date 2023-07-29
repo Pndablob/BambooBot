@@ -1,7 +1,7 @@
 import random
 from datetime import datetime
 
-from cogs.utils.constants import BOT_COLOR
+from cogs.utils.constants import EMBED_COLOR
 from cogs.utils.messages import add_author
 
 from discord.ext import commands
@@ -18,7 +18,7 @@ class RNG(commands.Cog):
         """flips a coin"""
         randint = random.randint(0, 1)
 
-        embed = discord.Embed(title='Coinflip:', color=BOT_COLOR, timestamp=datetime.utcnow())
+        embed = discord.Embed(title='Coinflip:', color=EMBED_COLOR, timestamp=datetime.utcnow())
 
         if randint == 0:
             embed.description = f'```Heads```'
@@ -41,7 +41,7 @@ class RNG(commands.Cog):
                 f'Duplicates were not requested and repeats is greater than the ceiling. Repeats has been set to the maximum allowed.')
             repeat = ceiling
 
-        embed = discord.Embed(color=BOT_COLOR, timestamp=datetime.utcnow())
+        embed = discord.Embed(color=EMBED_COLOR, timestamp=datetime.utcnow())
         add_author(embed, ctx.author)
 
         # Runs generation until repeats reaches the given limit

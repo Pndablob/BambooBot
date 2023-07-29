@@ -1,4 +1,4 @@
-from cogs.utils.constants import BOT_COLOR
+from cogs.utils.constants import EMBED_COLOR
 
 from discord.ext import commands
 from discord import app_commands
