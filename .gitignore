@@ -1,5 +1,8 @@
 # additional files
 /secrets/
+*.webm
+*.mp3
+*.wav
 *.json
 token.txt
 
