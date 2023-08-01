@@ -1,6 +1,7 @@
 import random
 from collections import deque
 from cogs.utils.music.config import *
+from cogs.utils.music.song import Song
 
 from discord.ext import commands
 import discord
@@ -25,12 +26,14 @@ class Playlist:
         if len(self.playlist) > MAX_SONGNAME_HISTORY_LENGTH:
             self.songname_history.popleft()
 
-    def add(self, track: str):
-        self.playlist.append(track)
+    def add(self, song):
+        self.playlist.append(song)
 
     def next(self, last_played):
         if self.loop:
             self.playlist.appendleft(self.history[-1])
+
+        self.playlist.popleft()
 
         if len(self.playlist) == 0:
             return None
