@@ -72,6 +72,6 @@ if __name__ == '__main__':
     dt_fmt = '%Y-%m-%d %H:%M:%S'
     fmt = logging.Formatter('[{asctime}] [{levelname:<7}] {name}: {message}', dt_fmt, style='{')
     file_handler.setFormatter(fmt)
-    discord.utils.setup_logging(handler=file_handler, formatter=fmt, level=logging.DEBUG)
+    discord.utils.setup_logging()
 
-    bot.run(token=token, reconnect=True)
+    bot.run(token=token, reconnect=True, log_handler=file_handler, log_formatter=fmt, log_level=logging.INFO)
