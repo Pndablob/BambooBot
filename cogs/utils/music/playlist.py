@@ -8,46 +8,24 @@ import discord
 
 
 class Playlist:
-    """Stores a playlist of songs as youtube links"""
+    """Stores a playlist of Song objects"""
 
     def __init__(self):
         self.playlist = deque()
-        self.history = deque()
-
-        self.songname_history = deque()
-
-        self.loop = False
 
     def __len__(self):
         return len(self.playlist)
 
-    def add_name(self, name: str):
-        self.songname_history.append(name)
-        if len(self.playlist) > MAX_SONGNAME_HISTORY_LENGTH:
-            self.songname_history.popleft()
-
     def add(self, song):
         self.playlist.append(song)
 
-    def next(self, last_played):
-        if self.loop:
-            self.playlist.appendleft(self.history[-1])
-
-        self.playlist.popleft()
-
-        if len(self.playlist) == 0:
+    def next(self, last_played=None):
+        try:
+            next_song = self.playlist.popleft()
+        except IndexError:
             return None
 
-        if last_played != "filler":
-            if len(self.history) > MAX_HISTORY_LENGTH:
-                self.history.popleft()
-
-        return self.playlist[0]
-
-    def prev(self, current_song):
-        if current_song is None:
-            self.playlist.appendleft(self.history[-1])
-            return self.playlist[0]
+        return next_song
 
     def shuffle(self):
         random.shuffle(self.playlist)
@@ -59,4 +37,3 @@ class Playlist:
 
     def empty(self):
         self.playlist.clear()
-        self.history.clear()
