@@ -1,7 +1,7 @@
 import yt_dlp
 import logging
 from cogs.utils.music.config import *
-from cogs.utils.music.audiocontroller import *
+from cogs.utils.music.audiocontroller import AudioController, YTDLSource
 
 from discord.ext import commands
 from discord import app_commands
@@ -23,7 +23,7 @@ class Music(commands.Cog):
         self.playlist = []
 
         self.controller_linked = False
-        #self.volume = 0.5
+        self.volume = 0.3
 
     def cog_unload(self) -> None:
         # self.bot.loop.create_task()
@@ -36,28 +36,26 @@ class Music(commands.Cog):
     @app_commands.describe(
         url="song link"
     )
-    async def play(self, interaction: discord.Interaction, *, url: str = "https://www.youtube.com/watch?v=9AFqO114Xq4"):
+    async def play(self, interaction: discord.Interaction, *, url: str):
         """
         Joins voice channel if not already
         Adds a song to the playlist and automatically plays until the playlist is empty
         """
-        log.info("play command invoked")
-
         if not self.controller_linked:
             self.init_audio(interaction)
             self.controller_linked = True
 
         if interaction.guild.voice_client is None:
-            await self.controller.connect_vc(interaction=interaction)
+            await self.controller.connect_vc(interaction)
 
-        await self.controller.process_song(url)
-        await interaction.response.send_message(f"now playing")
+        await self.controller.process_song(url, interaction)
+        # await interaction.response.send_message(embed=song.format_embed())
 
     """@app_commands.command(name='stream', description="Plays a song without downloading")
     @app_commands.describe(
         url="song link"
     )
-    async def stream(self, interaction: discord.Interaction, *, url: str = "https://www.youtube.com/watch?v=9AFqO114Xq4"):
+    async def stream(self, interaction: discord.Interaction, *, url: str):
         # Joins voice channel if not already
         # Plays a song without downloading
 
@@ -76,9 +74,9 @@ class Music(commands.Cog):
 
         await interaction.response.send_message(f'Now playing: **{player.title}**')"""
 
-    @app_commands.command(name='pause', description="Pauses the current audio")
+    @app_commands.command(name='pause', description="Pauses the current audio or resumes paused audio")
     async def pause(self, interaction: discord.Interaction):
-        """Pauses the bot from playing audio"""
+        """Pauses the bot from playing audio if already playing or resumes paused audio"""
 
         if interaction.guild.voice_client.is_playing() and interaction.guild.voice_client is not None:
             interaction.guild.voice_client.pause()
@@ -130,19 +128,20 @@ class Music(commands.Cog):
     @app_commands.command(name='skip', description="Skips to the next song")
     async def skip(self, interaction: discord.Interaction):
         """Skips to the next song in the playlist"""
-        #interaction.guild.voice_client.stop()
+        # interaction.guild.voice_client.stop()
+        pass
 
     @app_commands.command(name='volume', description="Changes the player's volume")
     async def volume(self, interaction: discord.Interaction, volume: app_commands.Range[int, 0, 100]):
         """Changes the player's volume"""
         interaction.guild.voice_client.source.volume = volume / 100
-        #self.controller.volume = volume / 100
+        self.controller.volume = volume
         await interaction.response.send_message(f"Changed volume to `{volume}`%")
 
     @app_commands.command(name='playlist', description="Views the current playlist")
     async def show_playlist(self, interaction: discord.Interaction):
         """Returns the playlist of songs as a list of song titles"""
-        #await interaction.response.send_message(f"playlist: {self.controller.queue}")
+        await interaction.response.send_message(f"playlist: {str(self.controller.queue)}")
 
 
 async def setup(bot):

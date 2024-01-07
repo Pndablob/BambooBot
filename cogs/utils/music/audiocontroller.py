@@ -41,82 +41,116 @@ class AudioController(object):
     """Controls audio playback"""
 
     def __init__(self, bot, interaction: discord.Interaction, volume: float):
-        log.info("audio controller init")
+        log.info("audio controller initialized")
         self.bot = bot
 
         self.interaction = interaction
         self.guild = interaction.guild
 
         self.queue = Playlist()
-        self.queue.add("https://www.youtube.com/watch?v=9AFqO114Xq4")
-        self.queue.add("https://www.youtube.com/watch?v=ciwx8yJPX54&themeRefresh=1")
-        self.queue.add("https://www.youtube.com/watch?v=HzdD8kbDzZA")
+        #self.queue.add("https://www.youtube.com/watch?v=9AFqO114Xq4")
+        #self.queue.add("https://www.youtube.com/watch?v=ciwx8yJPX54")
+        #self.queue.add("https://www.youtube.com/watch?v=HzdD8kbDzZA")
 
         self.now_playing = None
-        #self.volume = volume
+        self.volume = volume
         # self.timer =
 
     def next_song(self, error):
         """Invoked after a song is finished. Plays the next song if there is one."""
         os.remove(f"{os.getcwd()}\\downloaded_audio.webm")
         print("Done playing song")
+        print(f"playlist length {len(self.queue)}")
 
         next_song = self.queue.next(self.now_playing)
+
+        print(next_song.title)
 
         self.now_playing = None
 
         if next_song is None:
             print("Playlist empty")
+            self.bot.loop.create_task(self.stop_player())
             return
+
+        # await self.play_song(next_song)
+
+        # asyncio.get_event_loop().run_until_complete(self.play_song(next_song))
 
         coro = self.play_song(next_song)
         self.bot.loop.create_task(coro)
 
-    async def play_song(self, song):
+    async def play_song(self, song: Song):
         """Plays a song object"""
         self.now_playing = song
 
-        print(f"now playing: {self.now_playing}")
+        await self.interaction.channel.send(embed=song.format_embed())
+
+        print(f"now playing: {self.now_playing.title}")
 
         try:
-            player = await YTDLSource.from_url(song, loop=False, stream=False)
+            player = await YTDLSource.from_url(song.link, loop=False, stream=False)
             self.guild.voice_client.play(player, after=lambda e: self.next_song(e))
-            #self.guild.voice_client.source.volume = self.volume / 100
+            self.guild.voice_client.source.volume = self.volume
         except discord.ClientException as e:
             log.error(f"Error playing song: {e.__class__.__name__}")
 
-    async def process_song(self, track):
+    async def process_song(self, url, interaction: discord.Interaction = None):
         """Adds the track to the playlist instance and plays it, if it is the first song"""
-        print(self.now_playing)
+        # attempt to pass through interaction
+        if interaction is None:
+            interaction = self.interaction
+
+        # check if is valid youtube url
+        is_url = True if ("https://www.youtu" in url or "https://youtu.be" in url) else False
+        if not is_url:
+            await interaction.channel.send(f"Invalid Youtube link")
+            # search youtube
+            return
+
+        # Check whether to process as playlist
+        is_playlist = True if "playlist?list=" in url else False
+        if is_playlist:
+            # process playlist
+            await self.process_playlist(url)
+            return
+
+        # extract info from url to Song object
+        info = ytdl.extract_info(url=url, download=False)
+
+        song = Song(link=url, uploader=info['uploader'], title=info['title'], duration=info['duration'], channel_url=info['channel_url'], thumbnail=info['thumbnail'])
+
+        print(f"now processing {song.title}")
         try:
             os.remove(f"{os.getcwd()}\\downloaded_audio.webm")
         except:
             pass
 
-        # check if is valid youtube url
-        is_url = True if ("https://www.youtu" in track or "https://youtu.be" in track) else False
-        is_playlist = True if "playlist?list=" in track else False
-
-        if is_playlist:
-            await self.process_playlist(track)
-
-            if self.now_playing is None:
-                await self.play_song(self.queue.playlist[0])
-
-        if not is_url:
-            await self.interaction.response.send_message(f"Invalid Youtube link")
-            # search youtube
-            return
-
         if self.now_playing is not None:
-            self.queue.add(track)
-            await self.interaction.channel.send("Added track to playlist as a song is already playings")
-        if self.now_playing is None:
-            track = track.split("&list=")[0]
-            await self.play_song(track)
+            self.queue.add(song)
 
-    async def process_playlist(self, track):
-        pass
+            embed = song.format_embed()
+            embed.title = f"Added to queue `[{len(self.queue)}]`"
+            await interaction.response.send_message(embed=embed)
+
+            print(f"added {song.title} to queue")
+            print(len(self.queue))
+        elif self.now_playing is None:
+            #track = url.split("&list=")[0]
+            #await self.play_song(track)
+            await self.play_song(song)
+
+    async def process_playlist(self, url):
+        r = ytdl.extract_info(url, download=False)
+
+        for e in r['entries']:
+            link = f"https://www.youtube.com/watch?v={e['id']}"
+
+            song = Song(link=link, uploader=e['uploader'], title=e['title'], duration=e['duration'], channel_url=e['channel_url'], thumbnail=e['thumbnail'])
+
+            self.queue.add(song)
+
+        await self.play_song(self.queue.next())
 
     async def stop_player(self):
         """stops the player"""
@@ -126,6 +160,7 @@ class AudioController(object):
                 not self.guild.voice_client.is_paused() and not self.guild.voice_client.is_playing()):
             return
 
+        self.now_playing = None
         self.queue.loop = False
         self.guild.voice_client.stop()
 
