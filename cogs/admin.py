@@ -3,6 +3,7 @@ import logging
 import textwrap
 import traceback
 from contextlib import redirect_stdout
+from datetime import datetime
 from bot import initial_extensions
 from cogs.utils.constants import EMBED_COLOR
 
@@ -32,7 +33,7 @@ class Admin(commands.Cog):
     @commands.guild_only()
     async def sync_commands(self, ctx):
         await self.bot.tree.sync()
-        await ctx.send(f"Synced application commands globally")
+        await ctx.send(f"Synced all application commands")
 
     def get_syntax_error(self, e: SyntaxError) -> str:
         if e.text is None:
@@ -141,7 +142,7 @@ class Admin(commands.Cog):
             exec(to_compile, env)
         except Exception as e:
             return await ctx.send(
-                embed=discord.Embed(title="📤 Output", description=f"```py\n{e.__class__.__name__}: {e}\n```"),
+                embed=discord.Embed(title="📤 Output", description=f"```py\n{e.__class__.__name__}: {e}\n```", color=EMBED_COLOR, timestamp=datetime.utcnow()),
                 ephemeral=True
             )
 
@@ -152,7 +153,7 @@ class Admin(commands.Cog):
         except Exception as e:
             value = stdout.getvalue()
             await ctx.send(
-                embed=discord.Embed(title="📤 Output", description=f"```py\n{value}{traceback.format_exc()}\n```"),
+                embed=discord.Embed(title="📤 Output", description=f"```py\n{value}{traceback.format_exc()}\n```", color=EMBED_COLOR, timestamp=datetime.utcnow()),
                 ephemeral=True
             )
         else:
@@ -165,13 +166,13 @@ class Admin(commands.Cog):
             if ret is None:
                 if value:
                     await ctx.send(
-                        embed=discord.Embed(title="📤 Output", description=f"```py\n{value}\n```"),
+                        embed=discord.Embed(title="📤 Output", description=f"```py\n{value}\n```", color=EMBED_COLOR, timestamp=datetime.utcnow()),
                         ephemeral=True
                     )
             else:
                 self._last_result = ret
                 await ctx.send(
-                    embed=discord.Embed(title="📤 Output", description=f"```py\n{value}{ret}\n```"),
+                    embed=discord.Embed(title="📤 Output", description=f"```py\n{value}{ret}\n```", color=EMBED_COLOR, timestamp=datetime.utcnow()),
                     ephemeral=True
                 )
 
