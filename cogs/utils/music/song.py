@@ -6,11 +6,12 @@ import discord
 
 
 class Song:
-    def __init__(self, link: str = None, uploader: str = None, title: str = None, duration: int = None, channel_url: str = None, thumbnail: str = None):
+    def __init__(self, filename, link: str = None, uploader: str = None, title: str = None, duration: int = None, channel_url: str = None, thumbnail: str = None):
         #self.info = self.SongInfo(song_url, uploader, title, duration, channel_url, thumbnail)
 
     #class SongInfo:
         #def __init__(self, song_url: str, uploader: str, title: str, duration: int, channel_url: str, thumbnail: str):
+        self.filename = filename
         self.link = link
         self.uploader = uploader
         self.title = title
