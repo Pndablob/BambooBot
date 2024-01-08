@@ -13,9 +13,9 @@ class Stats(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    @app_commands.command(name="ping")
+    @app_commands.command(name="ping", description="Shows the bot latency")
     async def ping(self, interaction: discord.Interaction):
-        embed = discord.Embed(title="Pong! 🏓", description=f"```md\n[{round(self.bot.latency * 1000)}ms]```",
+        embed = discord.Embed(title="Pong! 🏓", description=f"```py\n[{round(self.bot.latency * 1000)} ms]```",
                               color=EMBED_COLOR, timestamp=datetime.now())
         await interaction.response.send_message(embed=embed)
 
