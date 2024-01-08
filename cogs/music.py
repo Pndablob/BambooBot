@@ -1,7 +1,6 @@
 import yt_dlp
 import logging
-from cogs.utils.music.config import *
-from cogs.utils.music.audiocontroller import AudioController, YTDLSource
+from cogs.utils.music.audiocontroller import AudioController
 
 from discord.ext import commands
 from discord import app_commands
@@ -9,8 +8,6 @@ import discord
 
 # Suppress noise about console usage from errors
 yt_dlp.utils.bug_reports_message = lambda: ''
-
-ytdl = yt_dlp.YoutubeDL(YTDL_OPTIONS)
 
 log = logging.getLogger('discord')
 
@@ -125,12 +122,6 @@ class Music(commands.Cog):
 
         await interaction.response.send_message("Stopped and disconnected bot")
 
-    @app_commands.command(name='skip', description="Skips to the next song")
-    async def skip(self, interaction: discord.Interaction):
-        """Skips to the next song in the playlist"""
-        # interaction.guild.voice_client.stop()
-        pass
-
     @app_commands.command(name='volume', description="Changes the player's volume")
     async def volume(self, interaction: discord.Interaction, volume: app_commands.Range[int, 0, 100]):
         """Changes the player's volume"""
@@ -138,10 +129,31 @@ class Music(commands.Cog):
         self.controller.volume = volume
         await interaction.response.send_message(f"Changed volume to `{volume}`%")
 
-    @app_commands.command(name='playlist', description="Views the current playlist")
+    @app_commands.command(name='skip', description="Skips to the next song")
+    async def skip(self, interaction: discord.Interaction):
+        """Skips to the next song in the playlist"""
+        # interaction.guild.voice_client.stop()
+        pass
+
+    @app_commands.command(name='playlist', description="Shows the next 5 songs in the current playlist")
     async def show_playlist(self, interaction: discord.Interaction):
         """Returns the playlist of songs as a list of song titles"""
         await interaction.response.send_message(f"playlist: {str(self.controller.queue)}")
+
+    @app_commands.command(name='shuffle', description="Shuffles the current playlist")
+    async def shuffle(self, interaction: discord.Interaction):
+        self.controller.queue.shuffle()
+
+        await interaction.response.send_message(f"Shuffled playlist")
+
+    @app_commands.command(name='loop', description="Loops the current playlist")
+    async def loop(self, interaction: discord.Interaction):
+        if self.controller.loop:
+            self.controller.loop = False
+            await interaction.response.send_message(f"Looping disabled")
+        else:
+            self.controller.loop = True
+            await interaction.response.send_message(f"Looping enabled 🔁")
 
 
 async def setup(bot):
