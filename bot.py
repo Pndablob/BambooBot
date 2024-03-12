@@ -1,6 +1,16 @@
+# TODO:
+#  music cog
+#  global command error handling
+#  pagination (discord.ext.menus)?
+#  custom help commands
+#  organize commands into main and sub commands
+#  git push pull using commands
+#  vps hosting
+
+
 import logging
 from datetime import datetime
-from cogs.utils.constants import PBT
+from cogs.utils.constants import *
 
 from discord.ext import commands
 import discord
@@ -11,21 +21,11 @@ initial_extensions = (
     'cogs.admin',
     'cogs.stats',
     'cogs.rng',
-    'cogs.mod',
+    'cogs.moderation',
     'cogs.info',
     'cogs.chat',
     'cogs.music',
 )
-
-
-# TODO slash commands
-# TODO music cog
-# TODO command error handling
-# TODO pagination (discord.ext.menus)?
-# TODO custom help commands
-# TODO organize commands into main and sub commands
-# TODO git push pull using commands
-# TODO vps hosting
 
 
 class BambooBot(commands.Bot):
@@ -43,7 +43,7 @@ class BambooBot(commands.Bot):
         )
 
     async def setup_hook(self) -> None:
-        await self.tree.sync(guild=discord.Object(PBT.id))
+        await self.tree.sync(guild=discord.Object(PBT_ID))
 
         for extension in initial_extensions:
             try:

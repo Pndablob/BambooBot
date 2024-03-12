@@ -5,7 +5,7 @@ from discord import app_commands
 import discord
 
 
-class Mod(commands.Cog):
+class Moderation(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
@@ -31,4 +31,4 @@ class Mod(commands.Cog):
 
 
 async def setup(bot):
-    await bot.add_cog(Mod(bot))
+    await bot.add_cog(Moderation(bot))

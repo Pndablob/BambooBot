@@ -1,7 +1,5 @@
 import random
 from collections import deque
-from cogs.utils.music.config import *
-from cogs.utils.music.song import Song
 
 from discord.ext import commands
 import discord
@@ -12,6 +10,12 @@ class Playlist:
 
     def __init__(self):
         self.playlist = deque()
+        self.history = deque()
+
+        self.loop = False
+
+    def __getitem__(self, item):
+        return self.playlist[item]
 
     def __len__(self):
         return len(self.playlist)
@@ -19,7 +23,10 @@ class Playlist:
     def add(self, song):
         self.playlist.append(song)
 
-    def next(self, last_played=None):
+    def next(self):
+        if self.loop:
+            self.playlist.append(self.history.popleft())
+
         try:
             next_song = self.playlist.popleft()
         except IndexError:
@@ -37,3 +44,4 @@ class Playlist:
 
     def empty(self):
         self.playlist.clear()
+        self.history.clear()

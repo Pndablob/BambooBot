@@ -17,7 +17,6 @@ class Music(commands.Cog):
         self.bot = bot
 
         self.controller = None
-        self.playlist = []
 
         self.controller_linked = False
         self.volume = 0.3
@@ -82,45 +81,14 @@ class Music(commands.Cog):
             interaction.guild.voice_client.resume()
             await interaction.response.send_message("Resumed audio")
 
-    @app_commands.command(name='join', description="Connects the bot to your voice channel")
-    async def join(self, interaction: discord.Interaction):
-        """Joins and connects to your voice channel"""
-
-        channel = interaction.user.voice.channel
-
-        if interaction.guild.voice_client is not None:
-            return await interaction.guild.voice_client.move_to(channel)
-
-        await channel.connect()
-        await interaction.response.send_message(f"Joined {channel.mention} ")
-
-    @app_commands.command(name='leave', description="Disconnects the bot from your current voice channel")
-    async def leave(self, interaction: discord.Interaction):
-        """Disconnects from your voice channel"""
-        self.controller_linked = False
-
-        channel = interaction.user.voice.channel
-
-        if interaction.guild.voice_client is not None:
-            await interaction.guild.voice_client.disconnect()
-
-        await interaction.response.send_message(f"Left {channel.mention}")
-
     @app_commands.command(name='stop', description="Stops and disconnects the bot from voice")
     async def stop(self, interaction: discord.Interaction):
         """Stops and disconnects the bot from voice"""
         self.controller_linked = False
 
-        if interaction.guild.voice_client is None:
-            await interaction.response.send_message(f"Bot is already disconnected")
+        await self.controller.disconnect_vc()
 
-        if interaction.guild.voice_client.is_playing():
-            interaction.guild.voice_client.stop()
-
-        if interaction.guild.voice_client.is_connected():
-            await interaction.guild.voice_client.disconnect(force=True)
-
-        await interaction.response.send_message("Stopped and disconnected bot")
+        await interaction.response.send_message(f"Stopped audio and disconnected bot from {interaction.user.voice.channel.mention}")
 
     @app_commands.command(name='volume', description="Changes the player's volume")
     async def volume(self, interaction: discord.Interaction, volume: app_commands.Range[int, 0, 100]):
@@ -132,28 +100,35 @@ class Music(commands.Cog):
     @app_commands.command(name='skip', description="Skips to the next song")
     async def skip(self, interaction: discord.Interaction):
         """Skips to the next song in the playlist"""
-        # interaction.guild.voice_client.stop()
-        pass
+        interaction.guild.voice_client.stop()
 
     @app_commands.command(name='playlist', description="Shows the next 5 songs in the current playlist")
     async def show_playlist(self, interaction: discord.Interaction):
         """Returns the playlist of songs as a list of song titles"""
         await interaction.response.send_message(f"playlist: {str(self.controller.queue)}")
 
-    @app_commands.command(name='shuffle', description="Shuffles the current playlist")
-    async def shuffle(self, interaction: discord.Interaction):
+    @app_commands.command(name='playlist_shuffle', description="Shuffles the current playlist")
+    async def playlist_shuffle(self, interaction: discord.Interaction):
         self.controller.queue.shuffle()
 
         await interaction.response.send_message(f"Shuffled playlist")
 
-    @app_commands.command(name='loop', description="Loops the current playlist")
-    async def loop(self, interaction: discord.Interaction):
+    @app_commands.command(name='playlist_loop', description="Loops the current playlist")
+    async def playlist_loop(self, interaction: discord.Interaction):
         if self.controller.loop:
             self.controller.loop = False
+            self.controller.queue.loop = False
             await interaction.response.send_message(f"Looping disabled")
         else:
             self.controller.loop = True
+            self.controller.queue.loop = True
             await interaction.response.send_message(f"Looping enabled 🔁")
+
+    @app_commands.command(name='playlist_clear', description="Clears the playlist")
+    async def playlist_clear(self, interaction: discord.Interaction):
+        self.controller.queue.empty()
+
+        await interaction.response.send_message(f"Cleared the current playlist")
 
 
 async def setup(bot):
