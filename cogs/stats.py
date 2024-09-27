@@ -1,42 +1,42 @@
-from datetime import datetime, timedelta
-from cogs.utils.constants import bot_color
+import math
+from datetime import datetime
+from cogs.utils.constants import EMBED_COLOR
 
 from discord.ext import commands
+from discord import app_commands
 import discord
 
 
-class stats(commands.Cog):
+class Stats(commands.Cog):
     """displays some stats for the bot"""
 
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command()
-    async def ping(self, ctx):
-        embed = discord.Embed(title="Pong! 🏓", description=f"```md\n[{round(self.bot.latency * 1000)}ms]```", color=bot_color, timestamp=datetime.utcnow())
-        await ctx.send(embed=embed)
+    @app_commands.command(name="ping", description="Shows the bot latency")
+    async def ping(self, interaction: discord.Interaction):
+        embed = discord.Embed(title="Pong! 🏓", description=f"```py\n[{round(self.bot.latency * 1000)} ms]```",
+                              color=EMBED_COLOR, timestamp=datetime.now())
+        await interaction.response.send_message(embed=embed)
 
     def get_uptime(self):
-        print(datetime.utcnow())
-        return datetime.utcnow() - self.bot.start_time
+        return round(datetime.timestamp(datetime.utcnow()) - datetime.timestamp(self.bot.start_time))
 
-    @commands.command(aliases=['ut'])
-    async def uptime(self, ctx):
+    @app_commands.command(name="uptime")
+    async def uptime(self, interaction: discord.Interaction):
         """Shows how long the bot has been online for"""
-        await ctx.send(self.bot.start_time)
+        diff = self.get_uptime()  # seconds since startup
 
-        diff = self.get_uptime()
+        days = math.floor(diff / 86400)  # Floor of diff / sec-in-day (86400)
+        hours = math.floor((diff % 86400) / 3600)  # Floor of (diff mod sec-in-day) / sec-in-hour (3600)
+        minutes = math.floor((diff % 3600) / 60)  # Floor of (diff mod sec-in-hour) / sec-in-min (60)
+        seconds = (diff % 60)  # diff mod sec-in-min
 
-        embed = discord.Embed(title='<:online:876192917167964230> Uptime', color=bot_color, timestamp=datetime.utcnow(),
-                              description=f"`{diff.days}` days, ` `hours, ` ` minutes, `{diff.seconds}` seconds")
+        embed = discord.Embed(title='<:online:1127821209921400833> Uptime', color=EMBED_COLOR, timestamp=datetime.now(),
+                              description=f"`{days}` days, `{hours}`hours, `{minutes}` minutes, `{seconds}` seconds")
 
-        await ctx.send(embed=embed)
-
-    @commands.command(aliases=['info'])
-    async def about(self, ctx):
-        """Shows some information about the bot"""
-        pass
+        await interaction.response.send_message(embed=embed)
 
 
 async def setup(bot):
-    await bot.add_cog(stats(bot=bot))
+    await bot.add_cog(Stats(bot=bot))

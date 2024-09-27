@@ -1,7 +1,9 @@
 # additional files
 /secrets/
+*.webm
+*.mp3
+*.wav
 *.json
-config.py
 token.txt
 
 # Pycharm files

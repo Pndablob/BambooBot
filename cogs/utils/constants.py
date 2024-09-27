@@ -1,5 +1,3 @@
-from enum import Enum
+EMBED_COLOR = 0x2ecc71
 
-bot_color = 0x2ecc71
-
-
+PBT_ID = 815952235296063549
