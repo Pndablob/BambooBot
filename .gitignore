@@ -5,6 +5,7 @@
 *.wav
 *.json
 token.txt
+ffmpeg.exe
 
 # Pycharm files
 .idea/
