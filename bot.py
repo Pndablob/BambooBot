@@ -54,14 +54,14 @@ class BambooBot(commands.Bot):
 
     async def on_ready(self):
         if not hasattr(self, 'uptime'):
-            self.start_time = datetime.utcnow()
+            self.start_time = datetime.now()
 
         log.info(f"Bot ready: {self.user} (ID: {self.user.id})")
-        log.info(f"Bot started in {datetime.utcnow().timestamp() - run_time} seconds")
+        log.info(f"Bot started in {datetime.now().timestamp() - run_time} seconds")
 
 
 if __name__ == '__main__':
-    run_time = datetime.utcnow().timestamp()
+    run_time = datetime.now().timestamp()
 
     token = open("token.txt").readline().rstrip()
 

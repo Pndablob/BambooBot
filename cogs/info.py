@@ -90,7 +90,7 @@ class Info(commands.Cog):
         color = EMBED_COLOR if len(guild.owner.roles) == 1 else guild.owner.color
 
         embed = discord.Embed(description=f"Created by **{guild.owner.name}** <t:{round(guild.created_at.timestamp())}:R>",
-                              color=color, timestamp=datetime.utcnow())
+                              color=color, timestamp=datetime.now())
         embed.set_author(name=guild.name, url=guild.icon.url)
         embed.set_footer(text=guild.id)
 

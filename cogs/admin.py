@@ -147,7 +147,7 @@ class Admin(commands.Cog):
             exec(to_compile, env)
         except Exception as e:
             return await ctx.send(
-                embed=discord.Embed(title="📤 Output", description=f"```py\n{e.__class__.__name__}: {e}\n```", color=EMBED_COLOR, timestamp=datetime.utcnow()),
+                embed=discord.Embed(title="📤 Output", description=f"```py\n{e.__class__.__name__}: {e}\n```", color=EMBED_COLOR, timestamp=datetime.now()),
                 ephemeral=True
             )
 
@@ -158,7 +158,7 @@ class Admin(commands.Cog):
         except Exception as e:
             value = stdout.getvalue()
             await ctx.send(
-                embed=discord.Embed(title="📤 Output", description=f"```py\n{value}{traceback.format_exc()}\n```", color=EMBED_COLOR, timestamp=datetime.utcnow()),
+                embed=discord.Embed(title="📤 Output", description=f"```py\n{value}{traceback.format_exc()}\n```", color=EMBED_COLOR, timestamp=datetime.now()),
                 ephemeral=True
             )
         else:
@@ -171,13 +171,13 @@ class Admin(commands.Cog):
             if ret is None:
                 if value:
                     await ctx.send(
-                        embed=discord.Embed(title="📤 Output", description=f"```py\n{value}\n```", color=EMBED_COLOR, timestamp=datetime.utcnow()),
+                        embed=discord.Embed(title="📤 Output", description=f"```py\n{value}\n```", color=EMBED_COLOR, timestamp=datetime.now()),
                         ephemeral=True
                     )
             else:
                 self._last_result = ret
                 await ctx.send(
-                    embed=discord.Embed(title="📤 Output", description=f"```py\n{value}{ret}\n```", color=EMBED_COLOR, timestamp=datetime.utcnow()),
+                    embed=discord.Embed(title="📤 Output", description=f"```py\n{value}{ret}\n```", color=EMBED_COLOR, timestamp=datetime.now()),
                     ephemeral=True
                 )
 

@@ -18,7 +18,7 @@ class RNG(commands.Cog):
         """flips a coin"""
         randint = random.randint(0, 1)
 
-        embed = discord.Embed(title='Coinflip:', color=EMBED_COLOR, timestamp=datetime.utcnow())
+        embed = discord.Embed(title='Coinflip:', color=EMBED_COLOR, timestamp=datetime.now())
 
         if randint == 0:
             embed.description = f'```Heads```'
@@ -45,7 +45,7 @@ class RNG(commands.Cog):
         if dupes is False and num > ceiling:
             num = ceiling
 
-        embed = discord.Embed(color=EMBED_COLOR, timestamp=datetime.utcnow())
+        embed = discord.Embed(color=EMBED_COLOR, timestamp=datetime.now())
 
         # Runs generation until repeats reaches the given limit
         while len(nums) < num:

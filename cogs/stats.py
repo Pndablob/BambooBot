@@ -20,7 +20,7 @@ class Stats(commands.Cog):
         await interaction.response.send_message(embed=embed)
 
     def get_uptime(self):
-        return round(datetime.timestamp(datetime.utcnow()) - datetime.timestamp(self.bot.start_time))
+        return round(datetime.timestamp(datetime.utcnow()) - datetime.timestamp(self.bot.now()))
 
     @app_commands.command(name="uptime")
     async def uptime(self, interaction: discord.Interaction):
