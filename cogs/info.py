@@ -4,6 +4,7 @@ from cogs.utils.constants import EMBED_COLOR
 from discord.ext import commands
 from discord import app_commands
 import discord
+import requests
 
 
 class Info(commands.Cog):
@@ -107,6 +108,35 @@ class Info(commands.Cog):
         embed.add_field(name=f'Roles [{len(guild.roles) - 1}]', value=role_list[:-2])
 
         await interaction.response.send_message(embed=embed)
+
+    @app_commands.command(name='mcserver', description="Shows information about a Minecraft server")
+    @app_commands.describe(
+        server="The server to show info about",
+    )
+    async def mcserver_info(self, interaction: discord.Interaction, server: str):
+        """shows information about a Minecraft server"""
+        response = requests.get(f"https://api.mcsrvstat.us/3/{server}")
+        data = response.json()
+
+        if data['online']:
+            embed = discord.Embed(title="Server Status <:online:1127821209921400833>", color=EMBED_COLOR, timestamp=datetime.now(),
+                                  description=
+                                  f"**IP:** `{data['ip']}`\n"
+                                  f"**Version:** `{data['version']}`\n"
+                                  f"**MOTD:** `{data['motd']['clean'][0]}`\n"
+                                  f"**Players:** `{data['players']['online']}/{data['players']['max']}`"
+                                  )
+            embed.set_thumbnail(url=f"https://eu.mc-api.net/v3/server/favicon/{server}")
+
+            player_list = []
+            for player in data['players']['list']:
+                player_list.append(player['name'])
+            if len(player_list) > 0:
+                embed.add_field(name=f"Players [{len(player_list)}]", value=f"```{', '.join(player_list)}```", inline=False)
+
+            await interaction.response.send_message(embed=embed)
+        else:
+            await interaction.response.send_message(f"Server `{server}` is offline")
 
     # TODO bot info command
     @app_commands.command(name="about", description="Shows information about the bot")
