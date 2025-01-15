@@ -31,9 +31,14 @@ class Admin(commands.Cog):
     @commands.command(name='sync')
     @commands.is_owner()
     @commands.guild_only()
-    async def sync_commands(self, ctx):
-        await self.bot.tree.sync()
-        await ctx.send(f"Synced all application commands")
+    async def sync_commands(self, ctx, guild: discord.Guild = None):
+        """Syncs all application commands"""
+        if guild is None:
+            await self.bot.tree.sync()
+            await ctx.send(f"Synced all application commands")
+        else:
+            await self.bot.tree.sync(guild=guild)
+            await ctx.send(f"Synced application commands for `{guild.name}`")
 
     def get_syntax_error(self, e: SyntaxError) -> str:
         if e.text is None:
